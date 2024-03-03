@@ -1,5 +1,2 @@
-.idea
-.vscode
-*.xml
-*.iml
-config.json
+# Godot 4+ specific ignores
+.godot/

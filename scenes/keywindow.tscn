@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://cdmuv75p8t1qn"]
+
+[ext_resource type="PackedScene" uid="uid://b4njtnq5v4d6y" path="res://scenes/insidewindow.tscn" id="1_1t5s3"]
+[ext_resource type="Script" path="res://scripts/keywindow.gd" id="1_lq4d8"]
+
+[node name="Window" type="Window"]
+position = Vector2i(631, 220)
+size = Vector2i(150, 150)
+transient = true
+unresizable = true
+script = ExtResource("1_lq4d8")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="InsideWindow" parent="CanvasLayer" instance=ExtResource("1_1t5s3")]
