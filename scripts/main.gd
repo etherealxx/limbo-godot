@@ -3,12 +3,41 @@ extends Node
 const windowsize := 150
 const margin := 50
 
+@onready var audioplayer = $AudioStreamPlayer
+
 var window_list : Array[Window]
+var window_pos_list : Array[Vector2i]
+
+var step_map = { # from quasar098's server.py
+	0:  {0: 4, 1: 5, 2: 6, 3: 7, 4: 0, 5: 1, 6: 2, 7: 3},  # mirror across x axis
+	1:  {0: 1, 1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 0},  # move right column to left and cross
+	2:  {0: 7, 1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 7: 6},  # move left column to right and cross
+	3:  {0: 5, 1: 4, 4: 1, 5: 0, 2: 7, 3: 6, 6: 3, 7: 2},  # two x patterns
+	4:  {0: 3, 1: 2, 2: 1, 3: 0, 4: 7, 5: 6, 6: 5, 7: 4},  # mirror across y axis
+	5:  {0: 7, 1: 6, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1, 7: 0},  # right+right stuff
+	6:  {0: 1, 1: 5, 5: 4, 4: 0, 2: 3, 3: 7, 7: 6, 6: 2},  # left+left stuff
+	7:  {1: 0, 5: 1, 4: 5, 0: 4, 3: 2, 7: 3, 6: 7, 2: 6},  # right+left stuff
+	8:  {1: 0, 5: 1, 4: 5, 0: 4, 2: 3, 3: 7, 7: 6, 6: 2},  # left+right stuff
+	9:  {0: 6, 1: 7, 2: 4, 3: 5, 4: 2, 5: 3, 6: 0, 7: 1},  # cross 2 wide blocks
+	10: {0: 5, 1: 6, 2: 7, 3: 3, 4: 4, 5: 0, 6: 1, 7: 2},  # swap top left 3 and bottom right 3
+	11: {0: 0, 1: 4, 2: 5, 3: 6, 4: 1, 5: 2, 6: 3, 7: 7},  # swap top right 3 and bottom left 3
+	12: {0: 1, 1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 0}
+}
 
 func pickwindow(index) -> Window:
 	return window_list[index - 1]
 
+func queueshufflewindow(pattern, delay):
+	var i = 0
+	for window in window_list:
+		var targetwindowindex = step_map[pattern][i]
+		window.queuemove(window_pos_list[targetwindowindex], delay)
+		#window.nextposition = window_pos_list[targetwindowindex]
+		i += 1
+		
 func _ready():
+	audioplayer.play(176)
+	
 	var primaryscreenindex = DisplayServer.get_primary_screen()
 	var usable_screen_rect = DisplayServer.screen_get_usable_rect(primaryscreenindex)
 	var usable_screen_height = usable_screen_rect.size.y
@@ -43,14 +72,31 @@ func _ready():
 		
 		window_list.append(window_instance)
 		loopstep += 1
+		window_pos_list.append(window_instance.position)
 		await get_tree().create_timer(0.2).timeout
-
-	await get_tree().create_timer(1.0).timeout
 	
-	pickwindow(1).nextposition = pickwindow(8).position
-	pickwindow(1).startmoving()
+	# 5 second delay, minus 0.2 * 8
+	await get_tree().create_timer(3.4).timeout
+	
+	#pickwindow(1).nextposition = pickwindow(8).position
+	#print(Time.get_time_string_from_system())
+	#print(pickwindow(8).position)
+	#pickwindow(1).startmoving()
 		
+	## get random shuffle pattern
+	var i = 0
+	for x in range(20):
+		var shufflepattern = randi_range(0, step_map.size() - 1)
+		#if i == 5:
+			#shufflewindow(0)
+			#await get_tree().create_timer(0.6).timeout
+		#else:
+		queueshufflewindow(shufflepattern, 0.3)
+		i += 1
 		
+	for window in window_list:
+		window.startmoving()
+	#shufflewindow(0)
 		
 		
 #

@@ -1,6 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://cjd8qucpnvc4w"]
+[gd_scene load_steps=3 format=3 uid="uid://cjd8qucpnvc4w"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_jhq3p"]
+[ext_resource type="AudioStream" uid="uid://sir63djl18uk" path="res://LIMBO.mp3" id="2_7q8ms"]
 
 [node name="Node" type="Node"]
 script = ExtResource("1_jhq3p")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_7q8ms")

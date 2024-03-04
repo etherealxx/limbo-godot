@@ -13,3 +13,7 @@ script = ExtResource("1_lq4d8")
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="InsideWindow" parent="CanvasLayer" instance=ExtResource("1_1t5s3")]
+
+[node name="MoveDelay" type="Timer" parent="."]
+
+[connection signal="timeout" from="MoveDelay" to="." method="_on_move_delay_timeout"]
