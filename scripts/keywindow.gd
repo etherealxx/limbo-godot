@@ -6,6 +6,8 @@ var ismoving := false
 var initialposition : Vector2
 var queued_moves : Array[NextMoveAndDelay]
 var nextmove : NextMoveAndDelay
+var donefirstmove := false
+var isdelaying := false
 #var nextposition : Vector2
 
 func clearqueue():
@@ -37,33 +39,43 @@ func _input(event):
 
 func _physics_process(delta):
 	if ismoving:
-		if nextmove.isempty() and queued_moves.size() > 0:
-			nextmove = queued_moves[0]
-		if !nextmove.isempty():
-			if position == Vector2i(nextmove.nextpos):
+		if nextmove.isempty() and queued_moves.size() > 0: # no nextmove queued and queue is not empty
+			nextmove = queued_moves[0] # first item in the queue become the nextmove
+			queued_moves.pop_front() # removes next move from the queue
+		if !nextmove.isempty(): # nextmove is a valid location
+			if position != Vector2i(nextmove.nextpos): # window position haven't arrived on the targeted next position
+				if initialposition == Vector2(-1,-1): # if initialpos is empty, fill it with current pos
+					initialposition = position
+				
+				# lerp stuff, basically move the window towards the targeted position
+				t += delta * 4 
+				position = Vector2i(initialposition.lerp(nextmove.nextpos, t))
+				
+			else: # window had arrived
 				t = 0.0
 				ismoving = false
-				initialposition = Vector2(-1,-1)
-				delaywait()
-				queued_moves.pop_front()
-				if queued_moves.size() > 0:
-					nextmove = queued_moves[0]
-			else:
-				if initialposition == Vector2(-1,-1):
-					initialposition = position
+				initialposition = Vector2(-1,-1) # reset/empty initialpos
+				
+				#if queued_moves.size() > 0:
+					#nextmove = queued_moves[0]
 					
-				t += delta * 4
-		
-				position = Vector2i(initialposition.lerp(nextmove.nextpos, t))
+				nextmove.setempty() # empty the current nextmove so it can be replaced
+				KeyManager.donemoving_onewindow()
+				donefirstmove = true
 				
 				#print(position.x, " ", position.y)
 				#position = Vector2i(
 					#fillwithintime(position.x, nextposition.x, 1.0, delta),
 					#fillwithintime(position.y, nextposition.y, 1.0, delta)
 				#)
-
+	else: # not moving
+		if KeyManager.is_allwindow_moved() and donefirstmove and !isdelaying:
+			isdelaying = true
+			delaywait() # delay before nextmove
+	
 func _on_move_delay_timeout():
 	ismoving = true
+	isdelaying = false
 
 ## unused
 #func fillwithintime(value_to_fill, target_value, target_time, delta):
