@@ -4,9 +4,13 @@ extends Window
 
 var ismoving := false
 var initialposition : Vector2
-var nextposition : Vector2
 var queued_moves : Array[NextMoveAndDelay]
 var nextmove : NextMoveAndDelay
+#var nextposition : Vector2
+
+func clearqueue():
+	queued_moves.clear()
+	nextmove = makeemptymove()
 
 func makeemptymove() -> NextMoveAndDelay:
 	return NextMoveAndDelay.new(Vector2i.ZERO, 0.0, true)
@@ -24,29 +28,12 @@ func queuemove(moveposition : Vector2i, delay : float):
 	
 func _ready():
 	nextmove = makeemptymove()
-#func fillwithintime(value_to_fill, target_value, target_time, delta):
-	#if value_to_fill < target_value:
-#
-		## Calculate increment per frame to reach target in one second
-		#var incrementPerSecond = float(target_value) / target_time # 1.0 represents one second
-		#var incrementPerFrame = incrementPerSecond * delta
-		#
-		## Round the increment to the nearest integer
-		#var roundedIncrement = round(incrementPerFrame)
-		#
-		## Increment number
-		#value_to_fill += int(roundedIncrement)
-		#
-		## Ensure number does not exceed the target value
-		#if value_to_fill >= target_value:
-			#value_to_fill = target_value
-			#print("Number reached target value: ", target_value)
-		#
-		#return value_to_fill
-	#else:
-		#return value_to_fill
 		
 var t = 0.0
+
+func _input(event):
+	if event.is_action_pressed("debugshuffle"): # F key
+		get_parent().startrandommove()
 
 func _physics_process(delta):
 	if ismoving:
@@ -77,3 +64,26 @@ func _physics_process(delta):
 
 func _on_move_delay_timeout():
 	ismoving = true
+
+## unused
+#func fillwithintime(value_to_fill, target_value, target_time, delta):
+	#if value_to_fill < target_value:
+#
+		## Calculate increment per frame to reach target in one second
+		#var incrementPerSecond = float(target_value) / target_time # 1.0 represents one second
+		#var incrementPerFrame = incrementPerSecond * delta
+		#
+		## Round the increment to the nearest integer
+		#var roundedIncrement = round(incrementPerFrame)
+		#
+		## Increment number
+		#value_to_fill += int(roundedIncrement)
+		#
+		## Ensure number does not exceed the target value
+		#if value_to_fill >= target_value:
+			#value_to_fill = target_value
+			#print("Number reached target value: ", target_value)
+		#
+		#return value_to_fill
+	#else:
+		#return value_to_fill
