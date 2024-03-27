@@ -3,9 +3,15 @@
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_jhq3p"]
 [ext_resource type="AudioStream" uid="uid://sir63djl18uk" path="res://LIMBO.mp3" id="2_7q8ms"]
 
-[node name="Node" type="Node"]
+[node name="Main" type="Node"]
 script = ExtResource("1_jhq3p")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("2_7q8ms")
 volume_db = -29.005
+
+[node name="DebugTimer" type="Timer" parent="."]
+wait_time = 0.5
+autostart = true
+
+[connection signal="timeout" from="DebugTimer" to="." method="_on_debug_timer_timeout"]

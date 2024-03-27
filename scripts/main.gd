@@ -2,6 +2,7 @@ extends Node
 
 const windowsize := 150
 const margin := 50
+const window_shuffle_delay = 0.2
 
 @onready var audioplayer = $AudioStreamPlayer
 
@@ -48,6 +49,7 @@ func startrandommove():
 		window.startmoving()
 
 func _ready():
+	KeyManager.get_main()
 	audioplayer.play(176)
 	
 	var primaryscreenindex = DisplayServer.get_primary_screen()
@@ -88,27 +90,29 @@ func _ready():
 		await get_tree().create_timer(0.2).timeout
 	
 	## 5 second delay, minus 0.2 * 8
-	#await get_tree().create_timer(3.4).timeout
+	await get_tree().create_timer(3.4).timeout
 	
 	#pickwindow(1).nextposition = pickwindow(8).position
 	#print(Time.get_time_string_from_system())
 	#print(pickwindow(8).position)
 	#pickwindow(1).startmoving()
 		
-	### get random shuffle pattern
-	#var i = 0
-	#for x in range(20):
-		#var shufflepattern = randi_range(0, step_map.size() - 1)
-		##if i == 5:
-			##shufflewindow(0)
-			##await get_tree().create_timer(0.6).timeout
-		##else:
-		#queueshufflewindow(shufflepattern, 0.3)
-		#i += 1
-		#
-	#for window in window_list:
-		#window.startmoving()
-	##shufflewindow(0)
+	## get random shuffle pattern
+	var i = 0
+	for x in range(20):
+		var shufflepattern = randi_range(0, step_map.size() - 1)
+		#if i == 5:
+			#shufflewindow(0)
+			#await get_tree().create_timer(0.6).timeout
+		#else:
+		queueshufflewindow(shufflepattern, window_shuffle_delay)
+		i += 1
+	
+	KeyManager.allwindow_moving()
+	KeyManager.startpolling()
+	for window in window_list:
+		window.startmoving()
+	#shufflewindow(0)
 		
 		
 #
@@ -141,3 +145,6 @@ func _ready():
 	#if number < 10000:
 		#print(number)
 	#
+
+func _on_debug_timer_timeout():
+	print(KeyManager.movelist_checksize())
