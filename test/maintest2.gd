@@ -2,7 +2,7 @@ extends Node
 
 const windowsize := 150
 const margin := 50
-const window_shuffle_delay = 0.05
+const window_shuffle_delay = 0.095
 const debugdontmove = false
 
 @onready var audioplayer = $AudioStreamPlayer
@@ -30,13 +30,13 @@ var step_map = { # from quasar098's server.py
 func pickwindow(index) -> Window:
 	return window_list[index - 1]
 
-func queueshufflewindow(pattern, delay, speed):
+func queueshufflewindow(pattern, delay, t_speed):
 	var i = 0
 	for window in window_list:
 		# 0:  {0: 4, -> if pattern is 0, and windoworder is 0, then window 0 will be moved to 4
 		var order = window.get_last_order()
 		var targetwindowindex = step_map[pattern][order]
-		window.queuemove(window_pos_list[targetwindowindex], delay, speed, targetwindowindex)
+		window.queuemove(window_pos_list[targetwindowindex], delay, t_speed, targetwindowindex)
 		#window.nextposition = window_pos_list[targetwindowindex]
 		i += 1
 
@@ -48,9 +48,9 @@ func startrandommove(movepattern := -1):
 	emptyqueuewindow()
 	var shufflepattern = randi_range(0, step_map.size() - 1)
 	if movepattern == -1:
-		queueshufflewindow(shufflepattern, 0.1, 2.0)
+		queueshufflewindow(shufflepattern, 0.1, 4.75)
 	else:
-		queueshufflewindow(movepattern, 0.1, 2.0)
+		queueshufflewindow(movepattern, 0.1, 4.75)
 
 	KeyManager.allwindow_moving()
 	KeyManager.startpolling()
@@ -109,65 +109,35 @@ func _ready():
 		#print(Time.get_time_string_from_system())
 		#print(pickwindow(8).position)
 		#pickwindow(1).startmoving()
-			
-		## get random shuffle pattern
-		var i = 1
-		for x in range(26):
-			var shufflepattern = randi_range(0, 12) # step_map.size() - 1)
-			#if i == 5:
-				#shufflewindow(0)
-				#await get_tree().create_timer(0.6).timeout
+		
+		var tween = create_tween()
+		tween.tween_property(window_list[0], "position", window_list[3].position, 0.4).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUART)
+		print("tween now!")
+		### get random shuffle pattern
+		#var i = 1
+		#for x in range(26):
+			#var shufflepattern = randi_range(0, 12) # step_map.size() - 1)
+			##if i == 5:
+				##shufflewindow(0)
+				##await get_tree().create_timer(0.6).timeout
+			##else:
+			#
+			#if i == 6: # 6th swap, bottom 4 swap with top 4
+				#queueshufflewindow(0, 3 * window_shuffle_delay, 3.5)
+			#elif i == 10:
+				## 10th swap, bottom 6 rotated then become top 6. previous top 2 rotated then become bottom 2.
+				## all key rotated in place becoming upside down
+				#queueshufflewindow(13, 4 * window_shuffle_delay, 3.2)
+			#elif i == 19: # 19th swap, the opposite of 6th swap
+				#queueshufflewindow(shufflepattern, 3 * window_shuffle_delay, 3.5)
 			#else:
-			
-			if i == 6: # 6th swap, bottom 4 swap with top 4
-				queueshufflewindow(0, 3 * window_shuffle_delay, 0.5)
-			elif i == 10:
-				# 10th swap, bottom 6 rotated then become top 6. previous top 2 rotated then become bottom 2.
-				# all key rotated in place becoming upside down
-				queueshufflewindow(13, 4 * window_shuffle_delay, 0.5)
-			elif i == 19: # 19th swap, the opposite of 6th swap
-				queueshufflewindow(shufflepattern, 3 * window_shuffle_delay, 0.5)
-			else:
-				queueshufflewindow(shufflepattern, window_shuffle_delay, 0.25)
-			i += 1
-		
-		KeyManager.allwindow_moving()
-		KeyManager.startpolling()
-		for window in window_list:
-			window.startmoving()
-		#shufflewindow(0)
-		
-		
-#
-#var number : int = 0
-#var target = 0
-#var timeElapsed = 0
-#
-#func fillinasecond(target_value, delta):
-	#if number < target_value:
-		#target = target_value
-		#timeElapsed += delta
+				#queueshufflewindow(shufflepattern, window_shuffle_delay, 4.75)
+			#i += 1
 		#
-		## Calculate increment per frame to reach target in one second
-		#var incrementPerSecond = float(target) / 1.0 # 1.0 represents one second
-		#var incrementPerFrame = incrementPerSecond * delta
-		#
-		## Round the increment to the nearest integer
-		#var roundedIncrement = round(incrementPerFrame)
-		#
-		## Increment number
-		#number += int(roundedIncrement)
-		#
-		## Ensure number does not exceed the target value
-		#if number >= target:
-			#number = target
-			#print("Number reached target value: ", target)
-#
-#func _process(delta):
-	#fillinasecond(10000, delta)
-	#if number < 10000:
-		#print(number)
-	#
+		#KeyManager.allwindow_moving()
+		#KeyManager.startpolling()
+		#for window in window_list:
+			#window.startmoving()
 
 func _on_debug_timer_timeout():
 	print(KeyManager.movelist_checksize())
