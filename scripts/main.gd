@@ -2,8 +2,8 @@ extends Node
 
 const windowsize := 150
 const margin := 50
-const window_shuffle_delay = 0.2
-
+const window_shuffle_delay = 0.095
+const debugdontmove = true
 @onready var audioplayer = $AudioStreamPlayer
 
 var window_list : Array[Window]
@@ -28,11 +28,11 @@ var step_map = { # from quasar098's server.py
 func pickwindow(index) -> Window:
 	return window_list[index - 1]
 
-func queueshufflewindow(pattern, delay):
+func queueshufflewindow(pattern, delay, t_speed):
 	var i = 0
 	for window in window_list:
 		var targetwindowindex = step_map[pattern][i]
-		window.queuemove(window_pos_list[targetwindowindex], delay)
+		window.queuemove(window_pos_list[targetwindowindex], delay, t_speed)
 		#window.nextposition = window_pos_list[targetwindowindex]
 		i += 1
 
@@ -40,11 +40,16 @@ func emptyqueuewindow():
 	for window in window_list:
 		window.clearqueue()
 
-func startrandommove():
+func startrandommove(movepattern := -1):
 	emptyqueuewindow()
 	var shufflepattern = randi_range(0, step_map.size() - 1)
-	queueshufflewindow(shufflepattern, 0.3)
-		
+	if movepattern == -1:
+		queueshufflewindow(shufflepattern, 0.1, 4.75)
+	else:
+		queueshufflewindow(movepattern, 0.1, 4.75)
+
+	KeyManager.allwindow_moving()
+	KeyManager.startpolling()
 	for window in window_list:
 		window.startmoving()
 
@@ -89,30 +94,41 @@ func _ready():
 		window_pos_list.append(window_instance.position)
 		await get_tree().create_timer(0.2).timeout
 	
-	## 5 second delay, minus 0.2 * 8
-	await get_tree().create_timer(3.4).timeout
-	
-	#pickwindow(1).nextposition = pickwindow(8).position
-	#print(Time.get_time_string_from_system())
-	#print(pickwindow(8).position)
-	#pickwindow(1).startmoving()
+	if not debugdontmove:
+		## 5 second delay, minus 0.2 * 8
+		await get_tree().create_timer(3.4).timeout
 		
-	## get random shuffle pattern
-	var i = 0
-	for x in range(20):
-		var shufflepattern = randi_range(0, step_map.size() - 1)
-		#if i == 5:
-			#shufflewindow(0)
-			#await get_tree().create_timer(0.6).timeout
-		#else:
-		queueshufflewindow(shufflepattern, window_shuffle_delay)
-		i += 1
-	
-	KeyManager.allwindow_moving()
-	KeyManager.startpolling()
-	for window in window_list:
-		window.startmoving()
-	#shufflewindow(0)
+		#pickwindow(1).nextposition = pickwindow(8).position
+		#print(Time.get_time_string_from_system())
+		#print(pickwindow(8).position)
+		#pickwindow(1).startmoving()
+			
+		## get random shuffle pattern
+		var i = 1
+		for x in range(26):
+			var shufflepattern = randi_range(0, 12) # step_map.size() - 1)
+			#if i == 5:
+				#shufflewindow(0)
+				#await get_tree().create_timer(0.6).timeout
+			#else:
+			
+			if i == 6: # 6th swap, bottom 4 swap with top 4
+				queueshufflewindow(0, 3 * window_shuffle_delay, 3.5)
+			elif i == 10:
+				# 10th swap, bottom 6 rotated then become top 6. previous top 2 rotated then become bottom 2.
+				# all key rotated in place becoming upside down
+				queueshufflewindow(shufflepattern, 3 * window_shuffle_delay, 3.5)
+			elif i == 19: # 19th swap, the opposite of 6th swap
+				queueshufflewindow(shufflepattern, 3 * window_shuffle_delay, 3.5)
+			else:
+				queueshufflewindow(shufflepattern, window_shuffle_delay, 4.75)
+			i += 1
+		
+		KeyManager.allwindow_moving()
+		KeyManager.startpolling()
+		for window in window_list:
+			window.startmoving()
+		#shufflewindow(0)
 		
 		
 #

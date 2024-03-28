@@ -1,6 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://b4njtnq5v4d6y"]
+[gd_scene load_steps=4 format=3 uid="uid://b4njtnq5v4d6y"]
 
 [ext_resource type="Texture2D" uid="uid://7sr4wp0wr8mx" path="res://key.png" id="1_7hv0t"]
+[ext_resource type="Shader" path="res://shaders/changecolor.gdshader" id="1_qnld5"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7sq2e"]
+shader = ExtResource("1_qnld5")
+shader_parameter/u_color_key = Color(0, 0, 0.0235294, 1)
+shader_parameter/u_replacement_color = Color(0, 0, 0, 1)
+shader_parameter/u_tolerance = 0.0
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -11,6 +18,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="TextureRect" type="TextureRect" parent="."]
+material = SubResource("ShaderMaterial_7sq2e")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

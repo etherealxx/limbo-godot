@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://cjd8qucpnvc4w"]
+[gd_scene load_steps=4 format=3 uid="uid://cjd8qucpnvc4w"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_jhq3p"]
 [ext_resource type="AudioStream" uid="uid://sir63djl18uk" path="res://LIMBO.mp3" id="2_7q8ms"]
+[ext_resource type="PackedScene" uid="uid://0rvechpayx0u" path="res://scenes/debug/debugwindow.tscn" id="3_nm8lq"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_jhq3p")
@@ -13,5 +14,7 @@ volume_db = -29.005
 [node name="DebugTimer" type="Timer" parent="."]
 wait_time = 0.5
 autostart = true
+
+[node name="Window" parent="." instance=ExtResource("3_nm8lq")]
 
 [connection signal="timeout" from="DebugTimer" to="." method="_on_debug_timer_timeout"]
