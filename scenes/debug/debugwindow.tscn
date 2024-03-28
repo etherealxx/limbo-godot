@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://0rvechpayx0u"]
+
+[ext_resource type="Script" path="res://scripts/debug/debugwindow.gd" id="1_5hrx3"]
+[ext_resource type="PackedScene" uid="uid://d3dsuby6vamp8" path="res://scenes/debug/insidedebugwindow.tscn" id="1_qakxo"]
+
+[node name="debugwindow" type="Window"]
+position = Vector2i(5, 36)
+size = Vector2i(150, 300)
+script = ExtResource("1_5hrx3")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="insidedebugwindow" parent="CanvasLayer" instance=ExtResource("1_qakxo")]

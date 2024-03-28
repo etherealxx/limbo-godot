@@ -4,18 +4,24 @@ extends Window
 
 var ismoving := false
 var initialposition : Vector2
+var windoworder : int
 var queued_moves : Array[NextMoveAndDelay]
 var nextmove : NextMoveAndDelay
 var donefirstmove := false
 var isdelaying := false
+
+const default_t_speed := 4.75
 #var nextposition : Vector2
+
+func set_order(index):
+	windoworder = index
 
 func clearqueue():
 	queued_moves.clear()
 	nextmove = makeemptymove()
 
 func makeemptymove() -> NextMoveAndDelay:
-	return NextMoveAndDelay.new(Vector2i.ZERO, 0.0, true)
+	return NextMoveAndDelay.new(Vector2i.ZERO, 0.0, 0.0, true)
 
 func delaywait():
 	timer.start(nextmove.delay)
@@ -24,18 +30,18 @@ func startmoving():
 	initialposition = Vector2(-1,-1)
 	ismoving = true
 
-func queuemove(moveposition : Vector2i, delay : float):
-	var newqueue = NextMoveAndDelay.new(moveposition, delay)
+func queuemove(moveposition : Vector2i, delay : float, t_speed : float = default_t_speed):
+	var newqueue = NextMoveAndDelay.new(moveposition, delay, t_speed)
 	queued_moves.append(newqueue)
 	
 func _ready():
 	nextmove = makeemptymove()
-		
-var t = 0.0
 
 func _input(event):
 	if event.is_action_pressed("debugshuffle"): # F key
 		get_parent().startrandommove()
+
+var t = 0.0
 
 func _physics_process(delta):
 	if ismoving:
@@ -48,7 +54,8 @@ func _physics_process(delta):
 					initialposition = position
 				
 				# lerp stuff, basically move the window towards the targeted position
-				t += delta * 4 
+				t += delta * nextmove.t_speed # 4.75
+				t = clampf(t, 0.0, 1.0)
 				position = Vector2i(initialposition.lerp(nextmove.nextpos, t))
 				
 			else: # window had arrived
