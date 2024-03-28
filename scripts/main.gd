@@ -3,7 +3,8 @@ extends Node
 const windowsize := 150
 const margin := 50
 const window_shuffle_delay = 0.095
-const debugdontmove = true
+const debugdontmove = false
+
 @onready var audioplayer = $AudioStreamPlayer
 
 var window_list : Array[Window]
@@ -15,14 +16,15 @@ var step_map = { # from quasar098's server.py
 	2:  {0: 7, 1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 7: 6},  # move left column to right and cross
 	3:  {0: 5, 1: 4, 4: 1, 5: 0, 2: 7, 3: 6, 6: 3, 7: 2},  # two x patterns
 	4:  {0: 3, 1: 2, 2: 1, 3: 0, 4: 7, 5: 6, 6: 5, 7: 4},  # mirror across y axis
-	5:  {0: 7, 1: 6, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1, 7: 0},  # right+right stuff
+	5:  {0: 7, 1: 6, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1, 7: 0},  # right+right stuff # is this the 10th swap?
 	6:  {0: 1, 1: 5, 5: 4, 4: 0, 2: 3, 3: 7, 7: 6, 6: 2},  # left+left stuff
 	7:  {1: 0, 5: 1, 4: 5, 0: 4, 3: 2, 7: 3, 6: 7, 2: 6},  # right+left stuff
 	8:  {1: 0, 5: 1, 4: 5, 0: 4, 2: 3, 3: 7, 7: 6, 6: 2},  # left+right stuff
 	9:  {0: 6, 1: 7, 2: 4, 3: 5, 4: 2, 5: 3, 6: 0, 7: 1},  # cross 2 wide blocks
 	10: {0: 5, 1: 6, 2: 7, 3: 3, 4: 4, 5: 0, 6: 1, 7: 2},  # swap top left 3 and bottom right 3
 	11: {0: 0, 1: 4, 2: 5, 3: 6, 4: 1, 5: 2, 6: 3, 7: 7},  # swap top right 3 and bottom left 3
-	12: {0: 1, 1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 0}
+	12: {0: 1, 1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 0},  # ?
+	13: {0: 6, 1: 7, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1, 7: 0}   # 10th swap
 }
 
 func pickwindow(index) -> Window:
@@ -31,8 +33,10 @@ func pickwindow(index) -> Window:
 func queueshufflewindow(pattern, delay, t_speed):
 	var i = 0
 	for window in window_list:
-		var targetwindowindex = step_map[pattern][i]
-		window.queuemove(window_pos_list[targetwindowindex], delay, t_speed)
+		# 0:  {0: 4, -> if pattern is 0, and windoworder is 0, then window 0 will be moved to 4
+		var order = window.get_last_order()
+		var targetwindowindex = step_map[pattern][order]
+		window.queuemove(window_pos_list[targetwindowindex], delay, t_speed, targetwindowindex)
 		#window.nextposition = window_pos_list[targetwindowindex]
 		i += 1
 
@@ -78,6 +82,9 @@ func _ready():
 	
 	for x in range(8):
 		var window_instance : Window = load("res://scenes/keywindow.tscn").instantiate()
+		window_instance.set_order(loopstep)
+		if loopstep == 0:
+			window_instance.debugmessage = true
 		add_child(window_instance)
 		
 		if loopstep > 0:
@@ -117,7 +124,7 @@ func _ready():
 			elif i == 10:
 				# 10th swap, bottom 6 rotated then become top 6. previous top 2 rotated then become bottom 2.
 				# all key rotated in place becoming upside down
-				queueshufflewindow(shufflepattern, 3 * window_shuffle_delay, 3.5)
+				queueshufflewindow(13, 4 * window_shuffle_delay, 3.2)
 			elif i == 19: # 19th swap, the opposite of 6th swap
 				queueshufflewindow(shufflepattern, 3 * window_shuffle_delay, 3.5)
 			else:
