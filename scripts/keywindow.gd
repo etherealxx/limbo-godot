@@ -1,10 +1,13 @@
 extends Window
 
 @onready var timer : Timer = $MoveDelay
+@onready var key := $CanvasLayer/InsideWindow
 
+var debugmessage := false
 var ismoving := false
 var initialposition : Vector2
 var windoworder : int
+var xth_move := 0
 var queued_moves : Array[NextMoveAndDelay]
 var nextmove : NextMoveAndDelay
 var donefirstmove := false
@@ -13,15 +16,27 @@ var isdelaying := false
 const default_t_speed := 4.75
 #var nextposition : Vector2
 
+func get_order():
+	return windoworder
+
+func get_last_order():
+	if queued_moves.size() > 0:
+		return queued_moves.back().nextorder
+		#if debugmessage: print("nextorder %d" % queued_moves[-1].nextorder)
+	else:
+		return windoworder
+		
 func set_order(index):
 	windoworder = index
 
 func clearqueue():
 	queued_moves.clear()
 	nextmove = makeemptymove()
+	xth_move = 0
+	if debugmessage: print("window %d, queue cleared" % windoworder)
 
 func makeemptymove() -> NextMoveAndDelay:
-	return NextMoveAndDelay.new(Vector2i.ZERO, 0.0, 0.0, true)
+	return NextMoveAndDelay.new(Vector2i.ZERO, 0.0, 0.0, -1, true)
 
 func delaywait():
 	timer.start(nextmove.delay)
@@ -30,16 +45,18 @@ func startmoving():
 	initialposition = Vector2(-1,-1)
 	ismoving = true
 
-func queuemove(moveposition : Vector2i, delay : float, t_speed : float = default_t_speed):
-	var newqueue = NextMoveAndDelay.new(moveposition, delay, t_speed)
+func queuemove(moveposition : Vector2i, delay : float, t_speed : float = default_t_speed, nextorder := -1):
+	var newqueue = NextMoveAndDelay.new(moveposition, delay, t_speed, nextorder)
 	queued_moves.append(newqueue)
 	
 func _ready():
 	nextmove = makeemptymove()
 
-func _input(event):
+func _input(event): # debug
 	if event.is_action_pressed("debugshuffle"): # F key
 		get_parent().startrandommove()
+	elif event.is_action_pressed("debugrotate"): # R key
+		key.tween_rotate()
 
 var t = 0.0
 
@@ -48,6 +65,12 @@ func _physics_process(delta):
 		if nextmove.isempty() and queued_moves.size() > 0: # no nextmove queued and queue is not empty
 			nextmove = queued_moves[0] # first item in the queue become the nextmove
 			queued_moves.pop_front() # removes next move from the queue
+			xth_move += 1
+			if xth_move == 10:
+				key.tween_rotate()
+				
+			if debugmessage: print("window %d, moving from %v to %v" % [windoworder, position, nextmove.nextpos])
+			
 		if !nextmove.isempty(): # nextmove is a valid location
 			if position != Vector2i(nextmove.nextpos): # window position haven't arrived on the targeted next position
 				if initialposition == Vector2(-1,-1): # if initialpos is empty, fill it with current pos
@@ -65,7 +88,7 @@ func _physics_process(delta):
 				
 				#if queued_moves.size() > 0:
 					#nextmove = queued_moves[0]
-					
+				windoworder = nextmove.nextorder
 				nextmove.setempty() # empty the current nextmove so it can be replaced
 				KeyManager.donemoving_onewindow()
 				donefirstmove = true
