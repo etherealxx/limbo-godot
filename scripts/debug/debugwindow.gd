@@ -21,9 +21,5 @@ func _ready():
 		xpos += 40
 		i += 1
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
-
 func debugclick(moveindex):
 	mainscript.startrandommove(moveindex)

@@ -25,6 +25,7 @@ window/size/viewport_width=150
 window/size/viewport_height=150
 window/size/mode=1
 window/subwindows/embed_subwindows=false
+window/per_pixel_transparency/allowed=true
 
 [input]
 

@@ -12,8 +12,9 @@ var queued_moves : Array[NextMoveAndDelay]
 var nextmove : NextMoveAndDelay
 var donefirstmove := false
 var isdelaying := false
+var waitingfordelay := false
 
-const default_t_speed := 4.75
+const default_speed := 2.0
 #var nextposition : Vector2
 
 func get_order():
@@ -43,14 +44,15 @@ func delaywait():
 	
 func startmoving():
 	initialposition = Vector2(-1,-1)
-	ismoving = true
+	move()
 
-func queuemove(moveposition : Vector2i, delay : float, t_speed : float = default_t_speed, nextorder := -1):
-	var newqueue = NextMoveAndDelay.new(moveposition, delay, t_speed, nextorder)
+func queuemove(moveposition : Vector2i, delay : float, speed : float = default_speed, nextorder := -1):
+	var newqueue = NextMoveAndDelay.new(moveposition, delay, speed, nextorder)
 	queued_moves.append(newqueue)
 	
 func _ready():
 	nextmove = makeemptymove()
+	get_viewport().set_transparent_background(true)
 
 func _input(event): # debug
 	if event.is_action_pressed("debugshuffle"): # F key
@@ -58,74 +60,40 @@ func _input(event): # debug
 	elif event.is_action_pressed("debugrotate"): # R key
 		key.tween_rotate()
 
-var t = 0.0
-
-func _physics_process(delta):
-	if ismoving:
-		if nextmove.isempty() and queued_moves.size() > 0: # no nextmove queued and queue is not empty
-			nextmove = queued_moves[0] # first item in the queue become the nextmove
-			queued_moves.pop_front() # removes next move from the queue
-			xth_move += 1
-			if xth_move == 10:
-				key.tween_rotate()
-				
-			if debugmessage: print("window %d, moving from %v to %v" % [windoworder, position, nextmove.nextpos])
+func _on_move_ends():
+	initialposition = Vector2(-1,-1)
+	windoworder = nextmove.nextorder
+	nextmove.setempty() # empty the current nextmove so it can be replaced
+	KeyManager.donemoving_onewindow()
+	donefirstmove = true
+	waitingfordelay = true
+	
+func move():
+	if nextmove.isempty() and queued_moves.size() > 0: # no nextmove queued and queue is not empty
+		nextmove = queued_moves[0] # first item in the queue become the nextmove
+		queued_moves.pop_front() # removes next move from the queue
+		xth_move += 1
+		if xth_move == 10 or xth_move == 19:
+			key.tween_rotate()
 			
-		if !nextmove.isempty(): # nextmove is a valid location
-			if position != Vector2i(nextmove.nextpos): # window position haven't arrived on the targeted next position
-				if initialposition == Vector2(-1,-1): # if initialpos is empty, fill it with current pos
-					initialposition = position
-				
-				# lerp stuff, basically move the window towards the targeted position
-				t += delta * nextmove.t_speed # 4.75
-				t = clampf(t, 0.0, 1.0)
-				position = Vector2i(initialposition.lerp(nextmove.nextpos, t))
-				
-			else: # window had arrived
-				t = 0.0
-				ismoving = false
-				initialposition = Vector2(-1,-1) # reset/empty initialpos
-				
-				#if queued_moves.size() > 0:
-					#nextmove = queued_moves[0]
-				windoworder = nextmove.nextorder
-				nextmove.setempty() # empty the current nextmove so it can be replaced
-				KeyManager.donemoving_onewindow()
-				donefirstmove = true
-				
-				#print(position.x, " ", position.y)
-				#position = Vector2i(
-					#fillwithintime(position.x, nextposition.x, 1.0, delta),
-					#fillwithintime(position.y, nextposition.y, 1.0, delta)
-				#)
-	else: # not moving
+		if debugmessage: print("window %d, moving from %v to %v" % [windoworder, position, nextmove.nextpos])
+		
+	if !nextmove.isempty(): # nextmove is a valid location
+		if initialposition == Vector2(-1,-1): # if initialpos is empty, fill it with current pos
+			initialposition = position
+		
+		var tween = create_tween()
+		# change the duration later to t_speed
+		tween.tween_property(self, "position", nextmove.nextpos, nextmove.speed).set_trans(Tween.TRANS_QUART)
+		tween.tween_callback(_on_move_ends)
+
+func _process(_delta):
+	if waitingfordelay:
 		if KeyManager.is_allwindow_moved() and donefirstmove and !isdelaying:
+			waitingfordelay = false
 			isdelaying = true
 			delaywait() # delay before nextmove
-	
-func _on_move_delay_timeout():
-	ismoving = true
-	isdelaying = false
 
-## unused
-#func fillwithintime(value_to_fill, target_value, target_time, delta):
-	#if value_to_fill < target_value:
-#
-		## Calculate increment per frame to reach target in one second
-		#var incrementPerSecond = float(target_value) / target_time # 1.0 represents one second
-		#var incrementPerFrame = incrementPerSecond * delta
-		#
-		## Round the increment to the nearest integer
-		#var roundedIncrement = round(incrementPerFrame)
-		#
-		## Increment number
-		#value_to_fill += int(roundedIncrement)
-		#
-		## Ensure number does not exceed the target value
-		#if value_to_fill >= target_value:
-			#value_to_fill = target_value
-			#print("Number reached target value: ", target_value)
-		#
-		#return value_to_fill
-	#else:
-		#return value_to_fill
+func _on_move_delay_timeout():
+	isdelaying = false
+	move()

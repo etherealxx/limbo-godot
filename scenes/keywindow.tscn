@@ -8,6 +8,7 @@ position = Vector2i(631, 220)
 size = Vector2i(150, 150)
 transient = true
 unresizable = true
+transparent = true
 script = ExtResource("1_lq4d8")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
