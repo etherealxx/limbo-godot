@@ -6,9 +6,10 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7sq2e"]
 shader = ExtResource("1_qnld5")
-shader_parameter/u_color_key = Color(0, 0, 0.0235294, 1)
+shader_parameter/u_color_key = Color(0, 0, 0, 1)
 shader_parameter/u_replacement_color = Color(0, 0, 0, 1)
 shader_parameter/u_tolerance = 0.0
+shader_parameter/u_interpolation_factor = 1.0
 
 [node name="Control" type="Control"]
 layout_mode = 3

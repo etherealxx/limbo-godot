@@ -13,6 +13,7 @@ var nextmove : NextMoveAndDelay
 var donefirstmove := false
 var isdelaying := false
 var waitingfordelay := false
+var correctkey := false
 
 const default_speed := 2.0
 #var nextposition : Vector2
@@ -47,6 +48,10 @@ func get_last_order():
 		
 func set_order(index):
 	windoworder = index
+
+func set_as_correct_key():
+	correctkey = true
+	key.flash_green()
 
 func clearqueue():
 	queued_moves.clear()
