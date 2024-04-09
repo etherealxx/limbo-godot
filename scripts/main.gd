@@ -126,7 +126,10 @@ func _ready():
 	
 	if not debugdontmove:
 		## 5 second delay, minus 0.2 * 8
-		await get_tree().create_timer(3.4).timeout
+		await get_tree().create_timer(1.4).timeout
+		var random_window = window_list.pick_random()
+		random_window.set_as_correct_key()
+		await get_tree().create_timer(2.0).timeout
 		
 		#pickwindow(1).nextposition = pickwindow(8).position
 		#print(Time.get_time_string_from_system())
