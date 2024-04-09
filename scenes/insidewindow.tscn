@@ -29,3 +29,6 @@ grow_horizontal = 2
 grow_vertical = 2
 pivot_offset = Vector2(75, 75)
 texture = ExtResource("1_7hv0t")
+
+[node name="DelayTimer" type="Timer" parent="."]
+one_shot = true

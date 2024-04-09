@@ -1,15 +1,31 @@
 extends Node
 
-const debugmessage := false
 const windowsize := 150
 const margin := 50
-const window_shuffle_delay = 0.04
+const window_shuffle_delay = 0.05
 const debugdontmove = false
 
 @onready var audioplayer = $AudioStreamPlayer
 
 var window_list : Array[Window]
 var window_pos_list : Array[Vector2i]
+
+#var step_map = { # from quasar098's server.py , now unused
+	#0:  {0: 4, 1: 5, 2: 6, 3: 7, 4: 0, 5: 1, 6: 2, 7: 3},  # mirror across x axis
+	#1:  {0: 1, 1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 0},  # move right column to left and cross
+	#2:  {0: 7, 1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 7: 6},  # move left column to right and cross
+	#3:  {0: 5, 1: 4, 4: 1, 5: 0, 2: 7, 3: 6, 6: 3, 7: 2},  # two x patterns
+	#4:  {0: 3, 1: 2, 2: 1, 3: 0, 4: 7, 5: 6, 6: 5, 7: 4},  # mirror across y axis
+	#5:  {0: 7, 1: 6, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1, 7: 0},  # right+right stuff # is this the 10th swap?
+	#6:  {0: 1, 1: 5, 5: 4, 4: 0, 2: 3, 3: 7, 7: 6, 6: 2},  # left+left stuff
+	#7:  {1: 0, 5: 1, 4: 5, 0: 4, 3: 2, 7: 3, 6: 7, 2: 6},  # right+left stuff
+	#8:  {1: 0, 5: 1, 4: 5, 0: 4, 2: 3, 3: 7, 7: 6, 6: 2},  # left+right stuff
+	#9:  {0: 6, 1: 7, 2: 4, 3: 5, 4: 2, 5: 3, 6: 0, 7: 1},  # cross 2 wide blocks
+	#10: {0: 5, 1: 6, 2: 7, 3: 3, 4: 4, 5: 0, 6: 1, 7: 2},  # swap top left 3 and bottom right 3
+	#11: {0: 0, 1: 4, 2: 5, 3: 6, 4: 1, 5: 2, 6: 3, 7: 7},  # swap top right 3 and bottom left 3
+	#12: {0: 1, 1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 0},  # ?
+	#13: {0: 6, 1: 7, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1, 7: 0}   # 10th swap
+#}
 
 var step_map_x = [ # from markhermy3100's Shuffler.ts -> https://github.com/MarkHermy3100/LimboKeys/blob/main/assets/scripts/Shuffler.ts
 	 [2, 4, 1, 3, 6, 8, 5, 7], # 0: on each 4 block (top and bottom) spin clockwise
@@ -32,8 +48,7 @@ var step_map_x = [ # from markhermy3100's Shuffler.ts -> https://github.com/Mark
 	 [3, 1, 2, 5, 4, 7, 6, 8], # 17: complicated, bottomright stays, opposite movements of 16     original comment -> # 8 shuffles
 	
 	 [5, 6, 7, 8, 1, 2, 3, 4], # 18: each 4 block (top and bottom) swap places    original comment ->  Block swap
-	 [8, 7, 6, 5, 4, 3, 2, 1], # 19: HARD TO LOOK AT     original comment ->  Circular rotation
-	 [1, 2, 3, 4, 5, 6, 7, 8]  # 20: static
+	 [8, 7, 6, 5, 4, 3, 2, 1]  # 19: HARD TO LOOK AT     original comment ->  Circular rotation
 	 ]
 	
 func pickwindow(index) -> Window:
@@ -91,11 +106,7 @@ func _ready():
 		key_area.position = Vector2i(key_area_xpos, key_area.position.y)
 	else:
 		pass # implement later
-	
-	var orbitcenterpos = Vector2i(	key_area.position.x + (key_area.size.x / 2),
-									key_area.size.y / 2)
-	KeyManager.set_orbitcenterpos(orbitcenterpos)
-	
+		
 	print(key_area.position, key_area.size)
 	
 	var spawn_xpos = key_area.position.x + (key_area.size.x / 2) - windowsize - margin
@@ -104,11 +115,10 @@ func _ready():
 	
 	for x in range(8):
 		var window_instance : Window = load("res://scenes/keywindow.tscn").instantiate()
-		
-		#if loopstep == 0:
-			#window_instance.debugmessage = true
+		window_instance.set_order(loopstep)
+		if loopstep == 0:
+			window_instance.debugmessage = true
 		add_child(window_instance)
-		window_instance.set_order(loopstep + 1)
 		
 		if loopstep > 0:
 			if loopstep % 2 == 0:
@@ -136,7 +146,7 @@ func _ready():
 		## get random shuffle pattern
 		var i = 1
 		for x in range(26):
-			var excluded_pattern = [8, 9, 18, 19, 20]
+			var excluded_pattern = [8, 9, 18, 19]
 			var shufflepattern = get_random_pattern(excluded_pattern)
 			#var shufflepattern = randi_range(0, 12) # step_map.size() - 1)
 			
@@ -146,16 +156,13 @@ func _ready():
 			#else:
 			
 			if i == 6: # 6th swap, bottom 4 swap with top 4
-				queueshufflewindow(18, 2 * window_shuffle_delay, 0.5)
+				queueshufflewindow(18, 3 * window_shuffle_delay, 0.5)
 			elif i == 10:
 				# 10th swap, bottom 6 rotated then become top 6. previous top 2 rotated then become bottom 2.
 				# all key rotated in place becoming upside down
-				queueshufflewindow(8, 2 * window_shuffle_delay, 0.5)
+				queueshufflewindow(8, 4 * window_shuffle_delay, 0.5)
 			elif i == 19: # 19th swap, the opposite of 6th swap
-				queueshufflewindow(9, 2 * window_shuffle_delay, 0.5)
-			elif i == 26:
-				queueshufflewindow(20, window_shuffle_delay, 0.1)
-				print("endmove queued")
+				queueshufflewindow(9, 3 * window_shuffle_delay, 0.5)
 			else:
 				queueshufflewindow(shufflepattern, window_shuffle_delay, 0.3)
 			i += 1
@@ -199,4 +206,4 @@ func _ready():
 	#
 
 func _on_debug_timer_timeout():
-	if debugmessage: print(KeyManager.movelist_checksize())
+	print(KeyManager.movelist_checksize())

@@ -8,7 +8,7 @@ func _ready():
 	var xpos := 5.0
 	var ypos := 5.0
 	var i = 0
-	for x in range(15):
+	for x in range(20):
 		if (i % 3) == 0 and i != 0:
 			ypos += 40
 			xpos = 5.0
