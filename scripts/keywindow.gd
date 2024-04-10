@@ -13,6 +13,7 @@ var nextmove : NextMoveAndDelay
 var donefirstmove := false
 var isdelaying := false
 var waitingfordelay := false
+var clickable := false
 var correctkey := false
 
 const default_speed := 2.0
@@ -74,10 +75,14 @@ func queuemove(moveposition : Vector2i, delay : float, speed : float = default_s
 	queued_moves.append(newqueue)
 
 func _input(event): # debug
-	if event.is_action_pressed("debugshuffle"): # F key
-		get_parent().startrandommove()
-	elif event.is_action_pressed("debugrotate"): # R key
-		key.tween_rotate()
+	#if event.is_action_pressed("debugshuffle"): # F key
+		#get_parent().startrandommove()
+	#elif event.is_action_pressed("debugrotate"): # R key
+		#key.tween_rotate()
+	if event.is_action_pressed("left_click"):
+		if clickable:
+			KeyManager.set_correctkey(correctkey)
+			get_tree().change_scene_to_file("res://scenes/limbobackground.tscn")
 
 func _on_move_ends():
 	initialposition = Vector2(-1,-1)
@@ -152,3 +157,6 @@ func queue_orbit_movement():
 func _on_arriving_in_orbit(angle):
 	orbit_d = angle
 	orbiting = true
+	await get_tree().create_timer(0.5).timeout
+	clickable = true
+	set_flag(FLAG_NO_FOCUS, false)

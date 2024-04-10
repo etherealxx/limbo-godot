@@ -1,8 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://bqgstfdbaowwl"]
+[gd_scene load_steps=10 format=3 uid="uid://bqgstfdbaowwl"]
 
-[ext_resource type="Texture2D" uid="uid://cx2sesnbtpd6w" path="res://test/bsod_by ether.png" id="1_kr6r4"]
+[ext_resource type="Script" path="res://scenes/bsod.gd" id="1_y8sfj"]
 [ext_resource type="FontFile" uid="uid://cwf8bhunthy7q" path="res://fonts/segoe_slboot.ttf" id="2_ujw4w"]
 [ext_resource type="Texture2D" uid="uid://djv7spbrpejsc" path="res://assets/textures/bsod_barcode_blue.png" id="3_2kba1"]
+[ext_resource type="AudioStream" uid="uid://1tloigrh253k" path="res://assets/sfx/geometry-dash-death-sound-effect.mp3" id="5_rbwbj"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_y1bbd"]
 font = ExtResource("2_ujw4w")
@@ -36,6 +37,7 @@ layout_mode = 3
 anchors_preset = 0
 offset_right = 1920.0
 offset_bottom = 1080.0
+script = ExtResource("1_y8sfj")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 1
@@ -51,7 +53,6 @@ visible = false
 layout_mode = 0
 offset_right = 1920.0
 offset_bottom = 1080.0
-texture = ExtResource("1_kr6r4")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1
@@ -67,6 +68,7 @@ layout_mode = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="ReferenceRect" type="ReferenceRect" parent="HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 105)
@@ -90,12 +92,13 @@ custom_minimum_size = Vector2(13, 0)
 layout_mode = 2
 
 [node name="yourpc" type="Label" parent="HBoxContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(950, 0)
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 0
-text = "Your PC ran into a problem and needs to restart. We're
-just collecting some error info, and then we'll restart for
-you."
+text = "Your PC ran into a problem and needs to restart. We're just collecting some error info, and then we'll restart for you."
 label_settings = SubResource("LabelSettings_3aqcm")
+autowrap_mode = 3
 
 [node name="ReferenceRect3" type="ReferenceRect" parent="HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 28)
@@ -159,3 +162,18 @@ size_flags_vertical = 0
 text = "If you call a support person, give them this info:
 Stop code: WRONG_KEY_CHOSEN"
 label_settings = SubResource("LabelSettings_tir6m")
+
+[node name="ReferenceRect2" type="ReferenceRect" parent="HBoxContainer"]
+custom_minimum_size = Vector2(186, 0)
+layout_mode = 2
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_rbwbj")
+autoplay = true
+
+[node name="QuitTimer" type="Timer" parent="."]
+wait_time = 7.0
+one_shot = true
+autostart = true
+
+[connection signal="timeout" from="QuitTimer" to="." method="_on_quit_timer_timeout"]
