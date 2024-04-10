@@ -4,3 +4,4 @@ addons/discord-sdk-gd/
 scripts/autoloads/discordrpc.gd
 test/bsod_by ether.png
 addons/script-ide/
+shaders/test/

@@ -76,8 +76,15 @@ func startrandommove(movepattern := -1):
 		window.startmoving()
 
 func _ready():
+	get_viewport().set_transparent_background(true)
+	var mainwindow = get_window()
+	mainwindow.set_flag(Window.FLAG_NO_FOCUS, true)
+	mainwindow.set_flag(Window.FLAG_RESIZE_DISABLED, true)
+	mainwindow.set_flag(Window.FLAG_BORDERLESS, true)
+	mainwindow.set_flag(Window.FLAG_TRANSPARENT, true)
 	KeyManager.get_main()
-	audioplayer.play(176)
+	LimboAudio.play_music()
+	#audioplayer.play(176)
 	
 	var primaryscreenindex = DisplayServer.get_primary_screen()
 	var usable_screen_rect = DisplayServer.screen_get_usable_rect(primaryscreenindex)

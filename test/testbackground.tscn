@@ -1,0 +1,130 @@
+[gd_scene load_steps=10 format=3 uid="uid://0eax3hwvwgc1"]
+
+[ext_resource type="Script" path="res://scripts/limbobackground.gd" id="1_vcadb"]
+[ext_resource type="Texture2D" uid="uid://g5finm4rrbaw" path="res://assets/textures/gd_default_background.png" id="2_6btb4"]
+[ext_resource type="Texture2D" uid="uid://dfrp8xxhq2tcb" path="res://assets/textures/this_pc_icon.png" id="3_rmg8e"]
+[ext_resource type="Shader" path="res://shaders/simpleblur.gdshader" id="4_cb556"]
+[ext_resource type="Shader" path="res://shaders/blurtest.gdshader" id="5_pb1cj"]
+
+[sub_resource type="Gradient" id="Gradient_nl0v1"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0, 0.509804, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_hl633"]
+gradient = SubResource("Gradient_nl0v1")
+width = 4096
+height = 2048
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0yx4n"]
+shader = ExtResource("4_cb556")
+shader_parameter/lod = 2.705
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ieoc4"]
+shader = ExtResource("5_pb1cj")
+shader_parameter/radius = 4.0
+shader_parameter/steps = 32
+shader_parameter/vertex_expand = 2.0
+
+[node name="LimboBackground" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1770.0
+offset_bottom = 930.0
+script = ExtResource("1_vcadb")
+
+[node name="PureBlue" type="Sprite2D" parent="."]
+position = Vector2(0, -440)
+scale = Vector2(0.9, 0.9)
+texture = SubResource("GradientTexture2D_hl633")
+centered = false
+
+[node name="BlueBG" type="Sprite2D" parent="."]
+self_modulate = Color(0.27451, 0.627451, 1, 1)
+texture_repeat = 2
+position = Vector2(0, -440)
+scale = Vector2(0.9, 0.9)
+texture = ExtResource("2_6btb4")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 4096, 1700)
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+disable_3d = true
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(1770, 930)
+render_target_update_mode = 0
+
+[node name="PCDropShadow2" type="Sprite2D" parent="SubViewportContainer/SubViewport"]
+self_modulate = Color(0.0705882, 0.0705882, 0.0705882, 0.239216)
+position = Vector2(699, 528)
+texture = ExtResource("3_rmg8e")
+
+[node name="ReferenceRect" type="ColorRect" parent="SubViewportContainer/SubViewport/PCDropShadow2"]
+material = SubResource("ShaderMaterial_0yx4n")
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -138.0
+offset_top = -128.0
+offset_right = -118.0
+offset_bottom = -128.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PCDropShadow2" type="Sprite2D" parent="."]
+visible = false
+self_modulate = Color(0.0705882, 0.0705882, 0.0705882, 0.478431)
+material = SubResource("ShaderMaterial_ieoc4")
+position = Vector2(696.5, 524.5)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("3_rmg8e")
+
+[node name="ReferenceRect" type="ColorRect" parent="PCDropShadow2"]
+visible = false
+material = SubResource("ShaderMaterial_0yx4n")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -127.0
+offset_top = -111.0
+offset_right = -135.0
+offset_bottom = -149.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="ThisPcIcon" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(694, 521)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("3_rmg8e")
+
+[node name="PCDropShadow" type="Sprite2D" parent="ThisPcIcon"]
+self_modulate = Color(0.0705882, 0.0705882, 0.0705882, 0.478431)
+show_behind_parent = true
+position = Vector2(5, 7)
+texture = ExtResource("3_rmg8e")
+
+[node name="ReferenceRect" type="ColorRect" parent="ThisPcIcon/PCDropShadow"]
+material = SubResource("ShaderMaterial_0yx4n")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -127.0
+offset_top = -111.0
+offset_right = -135.0
+offset_bottom = -149.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true

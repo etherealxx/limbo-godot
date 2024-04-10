@@ -6,10 +6,14 @@ var readytomove_list : Array[bool] = []
 var mainscene : Node
 var ispolling := false
 var orbitcenterpos : Vector2i
+var correctkeychosen : bool
 
 func _ready():
 	for x in range(8):
 		readytomove_list.append((true)) # ready to move for the first time
+
+func set_correctkey(keybool):
+	correctkeychosen = keybool
 
 func get_main():
 	mainscene = get_tree().get_root().get_node("Main")
