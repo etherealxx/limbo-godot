@@ -98,6 +98,7 @@ func move():
 		if xth_move == 26:
 			queue_orbit_movement()
 			key.queue_rotate(float(0.1 * windoworder), 360, 0.6)
+			key.shift_color(windoworder - 1)
 			#key.tween_rotate(360, 1.2)
 			return
 			

@@ -2,12 +2,14 @@
 
 [ext_resource type="Script" path="res://scripts/insidewindow.gd" id="1_03hv5"]
 [ext_resource type="Texture2D" uid="uid://7sr4wp0wr8mx" path="res://key.png" id="1_7hv0t"]
-[ext_resource type="Shader" path="res://shaders/changecolor.gdshader" id="1_qnld5"]
+[ext_resource type="Shader" path="res://shaders/change2color.gdshader" id="2_u5cox"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7sq2e"]
-shader = ExtResource("1_qnld5")
-shader_parameter/u_color_key = Color(0, 0, 0, 1)
-shader_parameter/u_replacement_color = Color(0, 0, 0, 1)
+shader = ExtResource("2_u5cox")
+shader_parameter/u_color_key1 = Color(0, 0, 0, 1)
+shader_parameter/u_replacement_color1 = Color(0, 0, 0, 1)
+shader_parameter/u_color_key2 = Color(0, 0, 0, 1)
+shader_parameter/u_replacement_color2 = Color(0, 0, 0, 1)
 shader_parameter/u_tolerance = 0.0
 shader_parameter/u_interpolation_factor = 1.0
 

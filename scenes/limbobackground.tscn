@@ -1,0 +1,36 @@
+[gd_scene load_steps=5 format=3 uid="uid://cvq6u1ieqtx7m"]
+
+[ext_resource type="Script" path="res://scripts/limbobackground.gd" id="1_bwegk"]
+[ext_resource type="Texture2D" uid="uid://g5finm4rrbaw" path="res://assets/textures/gd_default_background.png" id="1_muvcx"]
+
+[sub_resource type="Gradient" id="Gradient_nl0v1"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0, 0.509804, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_hl633"]
+gradient = SubResource("Gradient_nl0v1")
+width = 4096
+height = 2048
+
+[node name="LimboBackground" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1770.0
+offset_bottom = 930.0
+script = ExtResource("1_bwegk")
+
+[node name="PureBlue" type="Sprite2D" parent="."]
+position = Vector2(0, -440)
+scale = Vector2(0.9, 0.9)
+texture = SubResource("GradientTexture2D_hl633")
+centered = false
+
+[node name="BlueBG" type="Sprite2D" parent="."]
+self_modulate = Color(0.27451, 0.627451, 1, 1)
+texture_repeat = 2
+position = Vector2(0, -440)
+scale = Vector2(0.9, 0.9)
+texture = ExtResource("1_muvcx")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 4096, 1700)
