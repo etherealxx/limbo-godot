@@ -25,7 +25,8 @@ func _ready():
 	RenderingServer.set_default_clear_color(Color("000000"))
 	var currentwindow = get_window()
 	currentwindow.set_flag(Window.FLAG_NO_FOCUS, false)
-	currentwindow.set_flag(Window.FLAG_TRANSPARENT, false)
+	currentwindow.set_flag(Window.FLAG_TRANSPARENT, false) # idk if this do anything
+	get_viewport().set_transparent_background(false) # fixing windows 10 bug
 	currentwindow.set_mode(modenumber())
 	currentwindow.move_to_foreground()
 	set_tween_topbg()
