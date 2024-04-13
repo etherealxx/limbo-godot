@@ -1,7 +1,7 @@
 extends Node
 
-var limboendingscene = preload("res://scenes/limbobackground.tscn")
-var bsodscene = preload("res://scenes/bsod.tscn")
+#var limboendingscene = preload("res://scenes/limbobackground.tscn")
+#var bsodscene = preload("res://scenes/bsod.tscn")
 
 # default values
 var sixteen_by_nine_reso := false
