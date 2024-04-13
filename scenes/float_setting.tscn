@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://0sm7268q8a3o"]
+
+[ext_resource type="FontFile" uid="uid://8gxideu8ajla" path="res://fonts/segoeui.ttf" id="1_jcf5r"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_msxbt"]
+font = ExtResource("1_jcf5r")
+
+[node name="FloatSetting" type="HBoxContainer"]
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+text = "text"
+label_settings = SubResource("LabelSettings_msxbt")
+horizontal_alignment = 1
+
+[node name="SpinBox" type="SpinBox" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+step = 0.1

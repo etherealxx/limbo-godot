@@ -1,0 +1,61 @@
+[gd_scene load_steps=5 format=3 uid="uid://y4e85mkvnmmp"]
+
+[ext_resource type="Script" path="res://scripts/settings_menu.gd" id="1_i16qh"]
+[ext_resource type="FontFile" uid="uid://8gxideu8ajla" path="res://fonts/segoeui.ttf" id="2_pe1n0"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_k4q36"]
+font = ExtResource("2_pe1n0")
+
+[sub_resource type="LabelSettings" id="LabelSettings_4tptj"]
+font = ExtResource("2_pe1n0")
+font_size = 14
+
+[node name="SettingsMenu" type="Control" groups=["floatsetting"]]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 250.0
+offset_bottom = 450.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_i16qh")
+
+[node name="SettingsList" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="SettingsList"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+text = "Limbo-godot Settings"
+label_settings = SubResource("LabelSettings_k4q36")
+horizontal_alignment = 1
+
+[node name="NoticeLabel" type="Label" parent="SettingsList"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+text = "Note: In order to load the configured configs the next time you load the game, load_save needs to be ON and rewrite_save needs to be OFF."
+label_settings = SubResource("LabelSettings_4tptj")
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="ButtonList" type="HBoxContainer" parent="SettingsList"]
+layout_mode = 2
+
+[node name="Save" type="Button" parent="SettingsList/ButtonList"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Save and Quit"
+
+[node name="Discard" type="Button" parent="SettingsList/ButtonList"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Discard Settings and Quit"
+
+[connection signal="pressed" from="SettingsList/ButtonList/Save" to="." method="_on_save_pressed"]
+[connection signal="pressed" from="SettingsList/ButtonList/Discard" to="." method="_on_discard_pressed"]
