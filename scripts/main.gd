@@ -27,6 +27,8 @@ var mainwindow : Window
 var window_list : Array[Window]
 var window_pos_list : Array[Vector2i]
 
+var limboendingscene = load("res://scenes/limbobackground.tscn")
+
 var step_map_x = [ # from markhermy3100's Shuffler.ts -> https://github.com/MarkHermy3100/LimboKeys/blob/main/assets/scripts/Shuffler.ts
 	 [2, 4, 1, 3, 6, 8, 5, 7], # 0: on each 4 block (top and bottom) spin clockwise
 	 [2, 4, 1, 3, 7, 5, 8, 6], # 1: top 4 block: spin clockwise. bottom 4 block: spin counterclockwise
@@ -251,7 +253,7 @@ func switch_scene_to_ending():
 		mainwindow.set_flag(Window.FLAG_BORDERLESS, false)
 		mainwindow.set_flag(Window.FLAG_TRANSPARENT, false)
 		#mainwindow.set_mode(Window.MODE_MAXIMIZED)
-	get_tree().change_scene_to_packed(VariableKeeper.limboendingscene)
+	get_tree().change_scene_to_packed(limboendingscene)
 
 func _on_debug_timer_timeout():
 	if debugmessage: print(KeyManager.movelist_checksize())

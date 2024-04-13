@@ -14,6 +14,7 @@ extends Control
 var spikemoveupward := false
 var correctkey := false
 var movetonextscene := false
+var bsodscene : PackedScene
 
 func modenumber():
 	if (debug) or (VariableKeeper.checkvar("fullscreen_ending") == false):
@@ -49,6 +50,7 @@ func _ready():
 	pcicon.position = middlescreen
 	spikehitbox.position.x = middlescreen.x
 	set_tween_pcicon()
+	bsodscene = load("res://scenes/bsod.tscn")
 
 func set_tween_pcicon():
 	var tween = create_tween()
@@ -108,7 +110,10 @@ func _process(delta):
 		LimboAudio.play_sfx()
 		#print("inside tree: " + str(is_inside_tree()))
 		#print(get_tree_string_pretty())
-		get_tree().change_scene_to_packed(VariableKeeper.bsodscene)
+		while true:
+			if bsodscene:
+				get_tree().change_scene_to_packed(bsodscene)
+				break
 		
 func _on_spike_hitbox_body_entered(body):
 	if body.name == "PCBody":
