@@ -1,9 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://bqgstfdbaowwl"]
+[gd_scene load_steps=9 format=3 uid="uid://bqgstfdbaowwl"]
 
-[ext_resource type="Script" path="res://scenes/bsod.gd" id="1_y8sfj"]
+[ext_resource type="Script" path="res://scripts/bsod.gd" id="1_28gui"]
 [ext_resource type="FontFile" uid="uid://cwf8bhunthy7q" path="res://fonts/segoe_slboot.ttf" id="2_ujw4w"]
 [ext_resource type="Texture2D" uid="uid://djv7spbrpejsc" path="res://assets/textures/bsod_barcode_blue.png" id="3_2kba1"]
-[ext_resource type="AudioStream" uid="uid://1tloigrh253k" path="res://assets/sfx/geometry-dash-death-sound-effect.mp3" id="5_rbwbj"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_y1bbd"]
 font = ExtResource("2_ujw4w")
@@ -37,9 +36,26 @@ layout_mode = 3
 anchors_preset = 0
 offset_right = 1920.0
 offset_bottom = 1080.0
-script = ExtResource("1_y8sfj")
+script = ExtResource("1_28gui")
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="BlackBG" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="SixteenbyNine" type="ReferenceRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="SixteenbyNine"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -48,13 +64,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0.470588, 0.843137, 1)
 
-[node name="TextureRect" type="TextureRect" parent="."]
-visible = false
-layout_mode = 0
-offset_right = 1920.0
-offset_bottom = 1080.0
-
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="HBoxContainer" type="HBoxContainer" parent="SixteenbyNine"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -62,36 +72,36 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ReferenceRect" type="ReferenceRect" parent="HBoxContainer"]
+[node name="ReferenceRect" type="ReferenceRect" parent="SixteenbyNine/HBoxContainer"]
 custom_minimum_size = Vector2(186, 0)
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="SixteenbyNine/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ReferenceRect" type="ReferenceRect" parent="HBoxContainer/VBoxContainer"]
+[node name="ReferenceRect" type="ReferenceRect" parent="SixteenbyNine/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 105)
 layout_mode = 2
 
-[node name="frown" type="Label" parent="HBoxContainer/VBoxContainer"]
+[node name="frown" type="Label" parent="SixteenbyNine/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 0
 text = ":("
 label_settings = SubResource("LabelSettings_y1bbd")
 
-[node name="ReferenceRect2" type="ReferenceRect" parent="HBoxContainer/VBoxContainer"]
+[node name="ReferenceRect2" type="ReferenceRect" parent="SixteenbyNine/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 6)
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="SixteenbyNine/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="ReferenceRect" type="ReferenceRect" parent="HBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="ReferenceRect" type="ReferenceRect" parent="SixteenbyNine/HBoxContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(13, 0)
 layout_mode = 2
 
-[node name="yourpc" type="Label" parent="HBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="yourpc" type="Label" parent="SixteenbyNine/HBoxContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(950, 0)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -100,80 +110,85 @@ text = "Your PC ran into a problem and needs to restart. We're just collecting s
 label_settings = SubResource("LabelSettings_3aqcm")
 autowrap_mode = 3
 
-[node name="ReferenceRect3" type="ReferenceRect" parent="HBoxContainer/VBoxContainer"]
+[node name="ReferenceRect3" type="ReferenceRect" parent="SixteenbyNine/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="SixteenbyNine/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="ReferenceRect" type="ReferenceRect" parent="HBoxContainer/VBoxContainer/HBoxContainer2"]
+[node name="ReferenceRect" type="ReferenceRect" parent="SixteenbyNine/HBoxContainer/VBoxContainer/HBoxContainer2"]
 custom_minimum_size = Vector2(13, 0)
 layout_mode = 2
 
-[node name="percentcomplete" type="Label" parent="HBoxContainer/VBoxContainer/HBoxContainer2"]
+[node name="percentcomplete" type="Label" parent="SixteenbyNine/HBoxContainer/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 size_flags_vertical = 0
 text = "0% complete"
 label_settings = SubResource("LabelSettings_sys2e")
 
-[node name="ReferenceRect4" type="ReferenceRect" parent="HBoxContainer/VBoxContainer"]
+[node name="ReferenceRect4" type="ReferenceRect" parent="SixteenbyNine/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 
-[node name="HBoxContainer3" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+[node name="HBoxContainer3" type="HBoxContainer" parent="SixteenbyNine/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="ReferenceRect" type="ReferenceRect" parent="HBoxContainer/VBoxContainer/HBoxContainer3"]
+[node name="ReferenceRect" type="ReferenceRect" parent="SixteenbyNine/HBoxContainer/VBoxContainer/HBoxContainer3"]
 custom_minimum_size = Vector2(14, 0)
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/HBoxContainer3"]
+[node name="VBoxContainer" type="VBoxContainer" parent="SixteenbyNine/HBoxContainer/VBoxContainer/HBoxContainer3"]
 layout_mode = 2
 
-[node name="ReferenceRect" type="ReferenceRect" parent="HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer"]
+[node name="ReferenceRect" type="ReferenceRect" parent="SixteenbyNine/HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer"]
 custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
 
-[node name="TextureRect" type="TextureRect" parent="HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer"]
+[node name="TextureRect" type="TextureRect" parent="SixteenbyNine/HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer"]
 layout_mode = 2
 texture = ExtResource("3_2kba1")
 
-[node name="ReferenceRect2" type="ReferenceRect" parent="HBoxContainer/VBoxContainer/HBoxContainer3"]
+[node name="ReferenceRect2" type="ReferenceRect" parent="SixteenbyNine/HBoxContainer/VBoxContainer/HBoxContainer3"]
 custom_minimum_size = Vector2(12, 0)
 layout_mode = 2
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/HBoxContainer3"]
+[node name="VBoxContainer2" type="VBoxContainer" parent="SixteenbyNine/HBoxContainer/VBoxContainer/HBoxContainer3"]
 layout_mode = 2
 
-[node name="formoreinfo" type="Label" parent="HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer2"]
+[node name="formoreinfo" type="Label" parent="SixteenbyNine/HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer2"]
 layout_mode = 2
 size_flags_vertical = 0
 text = "For more information about this issue and possible fixes, visit https://www.windows.com/stopcode"
 label_settings = SubResource("LabelSettings_7sqd4")
 
-[node name="ReferenceRect2" type="ReferenceRect" parent="HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer2"]
+[node name="ReferenceRect2" type="ReferenceRect" parent="SixteenbyNine/HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer2"]
 custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 
-[node name="ifyoucall" type="Label" parent="HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer2"]
+[node name="ifyoucall" type="Label" parent="SixteenbyNine/HBoxContainer/VBoxContainer/HBoxContainer3/VBoxContainer2"]
 layout_mode = 2
 size_flags_vertical = 0
 text = "If you call a support person, give them this info:
 Stop code: WRONG_KEY_CHOSEN"
 label_settings = SubResource("LabelSettings_tir6m")
 
-[node name="ReferenceRect2" type="ReferenceRect" parent="HBoxContainer"]
+[node name="ReferenceRect2" type="ReferenceRect" parent="SixteenbyNine/HBoxContainer"]
 custom_minimum_size = Vector2(186, 0)
 layout_mode = 2
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("5_rbwbj")
-autoplay = true
+[node name="TextureRect" type="TextureRect" parent="."]
+visible = false
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
 
 [node name="QuitTimer" type="Timer" parent="."]
-wait_time = 7.0
 one_shot = true
-autostart = true
+
+[node name="PercentTimer" type="Timer" parent="."]
+wait_time = 0.7
+one_shot = true
 
 [connection signal="timeout" from="QuitTimer" to="." method="_on_quit_timer_timeout"]
+[connection signal="timeout" from="PercentTimer" to="." method="_on_percent_timer_timeout"]

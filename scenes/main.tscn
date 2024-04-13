@@ -1,17 +1,18 @@
 [gd_scene load_steps=3 format=3 uid="uid://cjd8qucpnvc4w"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_jhq3p"]
-[ext_resource type="AudioStream" uid="uid://sir63djl18uk" path="res://LIMBO.mp3" id="2_7q8ms"]
+[ext_resource type="Texture2D" uid="uid://c08sq0iksmi6o" path="res://assets/textures/limbo_scenehelp.png" id="2_rt7dn"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_jhq3p")
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("2_7q8ms")
-volume_db = -29.005
-
 [node name="DebugTimer" type="Timer" parent="."]
 wait_time = 0.5
 autostart = true
+
+[node name="LimboScenehelp" type="Sprite2D" parent="."]
+position = Vector2(367, 247)
+texture = ExtResource("2_rt7dn")
+metadata/_edit_lock_ = true
 
 [connection signal="timeout" from="DebugTimer" to="." method="_on_debug_timer_timeout"]
