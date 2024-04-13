@@ -34,13 +34,32 @@ offset_right = 1770.0
 offset_bottom = 930.0
 script = ExtResource("1_bwegk")
 
-[node name="PureBlue" type="Sprite2D" parent="."]
+[node name="BlackBG" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="SixteenbyNine" type="ReferenceRect" parent="."]
+clip_contents = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PureBlue" type="Sprite2D" parent="SixteenbyNine"]
 position = Vector2(0, -440)
 scale = Vector2(0.9, 0.9)
 texture = SubResource("GradientTexture2D_hl633")
 centered = false
 
-[node name="BlueBG" type="Sprite2D" parent="."]
+[node name="BlueBG" type="Sprite2D" parent="SixteenbyNine"]
 self_modulate = Color(0.27451, 0.627451, 1, 1)
 texture_repeat = 2
 position = Vector2(0, -440)
@@ -50,13 +69,13 @@ centered = false
 region_enabled = true
 region_rect = Rect2(0, 0, 4096, 1700)
 
-[node name="ThisPcIconBlur" type="Sprite2D" parent="."]
+[node name="ThisPcIconBlur" type="Sprite2D" parent="SixteenbyNine"]
 visible = false
 scale = Vector2(0.4, 0.4)
 texture = ExtResource("3_yhpv4")
 offset = Vector2(6.3, 11.515)
 
-[node name="ThisPcIconCont" type="TextureRect" parent="."]
+[node name="ThisPcIconCont" type="TextureRect" parent="SixteenbyNine"]
 layout_mode = 0
 offset_left = 254.0
 offset_top = 42.0
@@ -66,7 +85,7 @@ pivot_offset = Vector2(57, 51.275)
 texture = ExtResource("3_yhpv4")
 expand_mode = 1
 
-[node name="Label" type="Label" parent="ThisPcIconCont"]
+[node name="Label" type="Label" parent="SixteenbyNine/ThisPcIconCont"]
 layout_direction = 1
 layout_mode = 0
 offset_left = 18.0
@@ -77,14 +96,14 @@ text = "This PC"
 label_settings = SubResource("LabelSettings_5yq4b")
 horizontal_alignment = 1
 
-[node name="PCBody" type="CharacterBody2D" parent="ThisPcIconCont"]
+[node name="PCBody" type="CharacterBody2D" parent="SixteenbyNine/ThisPcIconCont"]
 motion_mode = 1
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ThisPcIconCont/PCBody"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SixteenbyNine/ThisPcIconCont/PCBody"]
 position = Vector2(57.5, 57)
 shape = SubResource("RectangleShape2D_upx7l")
 
-[node name="Spikes" type="Sprite2D" parent="."]
+[node name="Spikes" type="Sprite2D" parent="SixteenbyNine"]
 texture_repeat = 2
 position = Vector2(0, 1480)
 texture = ExtResource("5_jrnkh")
@@ -92,17 +111,16 @@ centered = false
 region_enabled = true
 region_rect = Rect2(0, 0.5, 12800, 63)
 
-[node name="SpikeHitbox" type="Area2D" parent="."]
+[node name="SpikeHitbox" type="Area2D" parent="SixteenbyNine"]
 position = Vector2(0, 1480)
 input_pickable = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SpikeHitbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SixteenbyNine/SpikeHitbox"]
 position = Vector2(83, 27)
 shape = SubResource("RectangleShape2D_h407p")
 
 [node name="QuitTimer" type="Timer" parent="."]
-wait_time = 3.0
 one_shot = true
 
-[connection signal="body_entered" from="SpikeHitbox" to="." method="_on_spike_hitbox_body_entered"]
+[connection signal="body_entered" from="SixteenbyNine/SpikeHitbox" to="." method="_on_spike_hitbox_body_entered"]
 [connection signal="timeout" from="QuitTimer" to="." method="_on_quit_timer_timeout"]

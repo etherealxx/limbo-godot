@@ -1,5 +1,6 @@
 extends Window
 
+@onready var mainscene = get_parent()
 @onready var timer : Timer = $MoveDelay
 @onready var key := $CanvasLayer/InsideWindow
 
@@ -31,10 +32,11 @@ var orbit_speed := 0.25
 
 func _ready():
 	nextmove = makeemptymove()
-	get_viewport().set_transparent_background(true)
+	if VariableKeeper.transparent_background:
+		get_viewport().set_transparent_background(true)
 	halfsize = Vector2i(
-		roundi(size.x / 2),
-		roundi(size.y / 2),
+		roundi(float(size.x) / 2.0), # float to get rid of the yellow message dangit
+		roundi(float(size.y) / 2.0)
 	)
 
 func get_order():
@@ -82,7 +84,7 @@ func _input(event): # debug
 	if event.is_action_pressed("left_click"):
 		if clickable:
 			KeyManager.set_correctkey(correctkey)
-			get_tree().change_scene_to_file("res://scenes/limbobackground.tscn")
+			mainscene.switch_scene_to_ending()
 
 func _on_move_ends():
 	initialposition = Vector2(-1,-1)
@@ -91,6 +93,11 @@ func _on_move_ends():
 	KeyManager.donemoving_onewindow()
 	donefirstmove = true
 	waitingfordelay = true
+
+func finishing_move():
+	queue_orbit_movement()
+	key.queue_rotate(float(0.1 * windoworder), 360, 0.6)
+	key.shift_color(windoworder - 1)
 	
 func move():
 	if nextmove.isempty() and queued_moves.size() > 0: # no nextmove queued and queue is not empty
@@ -101,9 +108,7 @@ func move():
 			key.tween_rotate()
 		
 		if xth_move == 26:
-			queue_orbit_movement()
-			key.queue_rotate(float(0.1 * windoworder), 360, 0.6)
-			key.shift_color(windoworder - 1)
+			finishing_move()
 			#key.tween_rotate(360, 1.2)
 			return
 			
@@ -145,7 +150,7 @@ func queue_orbit_movement():
 		#var entry_angle = atan2(preorbit_initialpos.y, preorbit_initialpos.x) # old code for shortest path
 		var tween = create_tween()
 		var entry_angle = deg_to_rad(float(windoworder * 45)) # target angle
-		var target_position = Vector2i(cos(entry_angle) * orbitoval_a, sin(entry_angle) * orbitoval_b) + orbitcenterpos - halfsize
+		var target_position = Vector2i(roundi(cos(entry_angle) * orbitoval_a), roundi(sin(entry_angle) * orbitoval_b)) + orbitcenterpos - halfsize
 		# old tween code for shortest path 👇
 		#tween.tween_property(self, "position",
 		#(Vector2i(preorbit_initialpos.normalized() * Vector2(orbitoval_a, orbitoval_b)) + orbitcenterpos - halfsize), 1.0).set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)

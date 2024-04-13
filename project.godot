@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="Limbo-godot"
+config/name="Keygen"
 run/main_scene="res://scenes/main.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
 config/icon="res://key.png"
@@ -21,6 +21,7 @@ KeyManager="*res://scripts/autoloads/keymanager.gd"
 ; DiscordSDKLoader="*res://addons/discord-sdk-gd/nodes/discord_autoload.gd"
 ; MyDiscordRPC="*res://scripts/autoloads/discordrpc.gd"
 LimboAudio="*res://scenes/audioplayer.tscn"
+VariableKeeper="*res://scripts/autoloads/variablekeeper.gd"
 
 [display]
 

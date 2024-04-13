@@ -1,13 +1,29 @@
 extends Node
 
-const debugmessage := false
+## Prints some messages to console for debug purposes
+@export var debugmessage := false
+## The end scene will displays on 16:9 ratio instead of full screen. For widescreen/showcase
+@export var sixteen_by_nine_reso := false
+## If this was false, the end scene will be a maximized window instead of full screen.
+@export var fullscreen_ending := true
+## Don't move the key automatically
+@export var debugdontmove := false
+## Make a window appear that could control the movement of the key. Combine it with debugdon'tmove
+@export var debug_key_mover_window := false
+## Instantly goes straight to the orbiting key without shuffling
+@export var instant_finish := false
+## Disabling this will make the key having a gray background behind it (no transparency)
+@export var transparent_background := true
+## Time to wait before automatically closes the game when you choose the correct key
+@export var winning_wait_time := 3.0
+## Instantly goes straight to the orbiting key without shuffling
+@export var bluescreen_wait_time := 7.0
+
 const windowsize := 150
 const margin := 50
 const window_shuffle_delay = 0.04
-const debugdontmove = false
 
-@onready var audioplayer = $AudioStreamPlayer
-
+var mainwindow : Window
 var window_list : Array[Window]
 var window_pos_list : Array[Vector2i]
 
@@ -40,14 +56,14 @@ func pickwindow(index) -> Window:
 	return window_list[index - 1]
 
 func queueshufflewindow(pattern, delay, speed):
-	var i = 0
+	var _i = 0
 	for window in window_list:
 		# 0:  {0: 4, -> if pattern is 0, and windoworder is 0, then window 0 will be moved to 4
 		var order = window.get_last_order()
 		var targetwindowindex = step_map_x[pattern][order - 1]
 		window.queuemove(window_pos_list[targetwindowindex - 1], delay, speed, targetwindowindex)
 		#window.nextposition = window_pos_list[targetwindowindex]
-		i += 1
+		_i += 1
 
 func emptyqueuewindow():
 	for window in window_list:
@@ -75,15 +91,28 @@ func startrandommove(movepattern := -1):
 	for window in window_list:
 		window.startmoving()
 
+func initialize_variables(listofvar : Array[String]):
+	for varname in listofvar:
+		VariableKeeper.set(varname, self.get(varname))
+
 func _ready():
+	$LimboScenehelp.hide()
 	get_viewport().set_transparent_background(true)
-	var mainwindow = get_window()
+	mainwindow = get_window()
 	mainwindow.set_flag(Window.FLAG_NO_FOCUS, true)
 	mainwindow.set_flag(Window.FLAG_RESIZE_DISABLED, true)
 	mainwindow.set_flag(Window.FLAG_BORDERLESS, true)
 	mainwindow.set_flag(Window.FLAG_TRANSPARENT, true)
 	KeyManager.get_main()
 	LimboAudio.play_music()
+	initialize_variables(
+		["sixteen_by_nine_reso", "fullscreen_ending", "winning_wait_time",
+		"bluescreen_wait_time", "transparent_background"]
+	)
+	
+	if debug_key_mover_window:
+		var keymover = load("res://scenes/debug/debugwindow.tscn").instantiate()
+		add_child(keymover)
 	#audioplayer.play(176)
 	
 	var primaryscreenindex = DisplayServer.get_primary_screen()
@@ -143,40 +172,44 @@ func _ready():
 		#print(Time.get_time_string_from_system())
 		#print(pickwindow(8).position)
 		#pickwindow(1).startmoving()
-			
-		## get random shuffle pattern
-		var i = 1
-		for x in range(26):
-			var excluded_pattern = [8, 9, 18, 19, 20]
-			var shufflepattern = get_random_pattern(excluded_pattern)
-			#var shufflepattern = randi_range(0, 12) # step_map.size() - 1)
-			
-			#if i == 5:
-				#shufflewindow(0)
-				#await get_tree().create_timer(0.6).timeout
-			#else:
-			
-			if i == 6: # 6th swap, bottom 4 swap with top 4
-				queueshufflewindow(18, 2 * window_shuffle_delay, 0.5)
-			elif i == 10:
-				# 10th swap, bottom 6 rotated then become top 6. previous top 2 rotated then become bottom 2.
-				# all key rotated in place becoming upside down
-				queueshufflewindow(8, 2 * window_shuffle_delay, 0.5)
-			elif i == 19: # 19th swap, the opposite of 6th swap
-				queueshufflewindow(9, 2 * window_shuffle_delay, 0.5)
-			elif i == 26:
-				queueshufflewindow(20, window_shuffle_delay, 0.1)
-				print("endmove queued")
-			else:
-				queueshufflewindow(shufflepattern, window_shuffle_delay, 0.3)
-			i += 1
 		
-		KeyManager.allwindow_moving()
-		KeyManager.startpolling()
-		for window in window_list:
-			window.startmoving()
+		if not instant_finish:
+			## get random shuffle pattern
+			var i = 1
+			for x in range(26):
+				var excluded_pattern = [8, 9, 18, 19, 20]
+				var shufflepattern = get_random_pattern(excluded_pattern)
+				#var shufflepattern = randi_range(0, 12) # step_map.size() - 1)
+				
+				#if i == 5:
+					#shufflewindow(0)
+					#await get_tree().create_timer(0.6).timeout
+				#else:
+				
+				if i == 6: # 6th swap, bottom 4 swap with top 4
+					queueshufflewindow(18, 2 * window_shuffle_delay, 0.5)
+				elif i == 10:
+					# 10th swap, bottom 6 rotated then become top 6. previous top 2 rotated then become bottom 2.
+					# all key rotated in place becoming upside down
+					queueshufflewindow(8, 2 * window_shuffle_delay, 0.5)
+				elif i == 19: # 19th swap, the opposite of 6th swap
+					queueshufflewindow(9, 2 * window_shuffle_delay, 0.5)
+				elif i == 26:
+					queueshufflewindow(20, window_shuffle_delay, 0.1)
+					print("endmove queued")
+				else:
+					queueshufflewindow(shufflepattern, window_shuffle_delay, 0.3)
+				i += 1
+			
+			KeyManager.allwindow_moving()
+			KeyManager.startpolling()
+			for window in window_list:
+				window.startmoving()
 		#shufflewindow(0)
-		
+		else: # instant finish
+			for window in window_list:
+				LimboAudio.play(13.6)
+				window.finishing_move()
 		
 #
 #var number : int = 0
@@ -208,6 +241,17 @@ func _ready():
 	#if number < 10000:
 		#print(number)
 	#
+
+func switch_scene_to_ending():
+	for window in window_list:
+		window.queue_free()
+	if not fullscreen_ending:
+		get_viewport().set_embedding_subwindows(false)
+		mainwindow.set_flag(Window.FLAG_NO_FOCUS, false)
+		mainwindow.set_flag(Window.FLAG_BORDERLESS, false)
+		mainwindow.set_flag(Window.FLAG_TRANSPARENT, false)
+		#mainwindow.set_mode(Window.MODE_MAXIMIZED)
+	get_tree().change_scene_to_packed(VariableKeeper.limboendingscene)
 
 func _on_debug_timer_timeout():
 	if debugmessage: print(KeyManager.movelist_checksize())
