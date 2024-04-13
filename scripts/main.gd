@@ -18,6 +18,18 @@ extends Node
 @export var winning_wait_time := 3.0
 ## Instantly goes straight to the orbiting key without shuffling
 @export var bluescreen_wait_time := 7.0
+## Create/loads settings. Turning this off will load the game with default settings
+@export var load_save := true
+## Only saves the current setting instead of loading. Basically this setting will make the game NOT load the save, but just saves.
+## Needs load_save set to true to works. Turn this off on the editor inspector tab to check the saved setting (loads setting)
+@export var rewrite_save := true
+
+var saved_values = [
+	"sixteen_by_nine_reso", "fullscreen_ending", "debugdontmove",
+	"debug_key_mover_window", "instant_finish", "transparent_background",
+	"winning_wait_time", "bluescreen_wait_time", "load_save",
+	"rewrite_save"
+]
 
 const windowsize := 150
 const margin := 50
@@ -26,6 +38,8 @@ const window_shuffle_delay = 0.04
 var mainwindow : Window
 var window_list : Array[Window]
 var window_pos_list : Array[Vector2i]
+var setting_window_opened := false
+var disable_opening_settings := false
 
 var limboendingscene = load("res://scenes/limbobackground.tscn")
 
@@ -60,11 +74,9 @@ func pickwindow(index) -> Window:
 func queueshufflewindow(pattern, delay, speed):
 	var _i = 0
 	for window in window_list:
-		# 0:  {0: 4, -> if pattern is 0, and windoworder is 0, then window 0 will be moved to 4
 		var order = window.get_last_order()
 		var targetwindowindex = step_map_x[pattern][order - 1]
 		window.queuemove(window_pos_list[targetwindowindex - 1], delay, speed, targetwindowindex)
-		#window.nextposition = window_pos_list[targetwindowindex]
 		_i += 1
 
 func emptyqueuewindow():
@@ -82,7 +94,6 @@ func startrandommove(movepattern := -1):
 
 	var excluded_pattern = [8, 9, 18, 19]
 	var shufflepattern = get_random_pattern(excluded_pattern)
-	#var shufflepattern = randi_range(0, step_map_x.size() - 1)
 	if movepattern == -1:
 		queueshufflewindow(shufflepattern, 0.1, 0.3)
 	else:
@@ -93,10 +104,30 @@ func startrandommove(movepattern := -1):
 	for window in window_list:
 		window.startmoving()
 
-func initialize_variables(listofvar : Array[String]):
+func initialize_global_variables(listofvar : Array[String]):
 	for varname in listofvar:
 		VariableKeeper.set(varname, self.get(varname))
 
+func config_set_value_from_variable_name(configfile, varname):
+	configfile.set_value("settings", varname, self.get(varname))
+
+func handle_load_and_save():
+		var config = ConfigFile.new()
+		
+		var err = config.load("user://limbosave.cfg")
+		if err == ERR_FILE_NOT_FOUND or rewrite_save:
+			# make new/update config file
+			for varname in saved_values:
+				config_set_value_from_variable_name(config, varname)
+			config.save("user://limbosave.cfg")
+			if rewrite_save: print("Config file updated.")
+			else: print("New config file is made.")
+		elif err == OK:
+			# load config file
+			for varname in saved_values:
+				self.set(varname, config.get_value("settings", varname))
+			print("Config file loaded.")
+			
 func _ready():
 	$LimboScenehelp.hide()
 	get_viewport().set_transparent_background(true)
@@ -107,7 +138,11 @@ func _ready():
 	mainwindow.set_flag(Window.FLAG_TRANSPARENT, true)
 	KeyManager.get_main()
 	LimboAudio.play_music()
-	initialize_variables(
+	
+	if load_save or rewrite_save:
+		handle_load_and_save()
+		
+	initialize_global_variables(
 		["sixteen_by_nine_reso", "fullscreen_ending", "winning_wait_time",
 		"bluescreen_wait_time", "transparent_background"]
 	)
@@ -128,7 +163,10 @@ func _ready():
 		var key_area_xpos = (usable_screen_width / 2) - (usable_screen_height / 2)
 		key_area.position = Vector2i(key_area_xpos, key_area.position.y)
 	else:
-		pass # implement later
+		# this should be the code for vertical monitor
+		# however i'm too lazy to implement it :)
+		push_error("Portrait/vertical monitor/resolution detected. Code not implemented yet")
+		get_tree().quit()
 	
 	var orbitcenterpos = Vector2i(	key_area.position.x + (key_area.size.x / 2),
 									key_area.size.y / 2)
@@ -165,15 +203,13 @@ func _ready():
 	if not debugdontmove:
 		## 5 second delay, minus 0.2 * 8
 		await get_tree().create_timer(1.2).timeout
+		if setting_window_opened: return
 		var random_window = window_list.pick_random()
 		random_window.set_as_correct_key()
 		#await get_tree().create_timer(2.0).timeout # old delay
 		await get_tree().create_timer(1.8).timeout
-		
-		#pickwindow(1).nextposition = pickwindow(8).position
-		#print(Time.get_time_string_from_system())
-		#print(pickwindow(8).position)
-		#pickwindow(1).startmoving()
+		if setting_window_opened: return
+		disable_opening_settings = true # prevent opening settings window when key is shuffling
 		
 		if not instant_finish:
 			## get random shuffle pattern
@@ -181,12 +217,6 @@ func _ready():
 			for x in range(26):
 				var excluded_pattern = [8, 9, 18, 19, 20]
 				var shufflepattern = get_random_pattern(excluded_pattern)
-				#var shufflepattern = randi_range(0, 12) # step_map.size() - 1)
-				
-				#if i == 5:
-					#shufflewindow(0)
-					#await get_tree().create_timer(0.6).timeout
-				#else:
 				
 				if i == 6: # 6th swap, bottom 4 swap with top 4
 					queueshufflewindow(18, 2 * window_shuffle_delay, 0.5)
@@ -212,37 +242,6 @@ func _ready():
 			for window in window_list:
 				LimboAudio.play(13.6)
 				window.finishing_move()
-		
-#
-#var number : int = 0
-#var target = 0
-#var timeElapsed = 0
-#
-#func fillinasecond(target_value, delta):
-	#if number < target_value:
-		#target = target_value
-		#timeElapsed += delta
-		#
-		## Calculate increment per frame to reach target in one second
-		#var incrementPerSecond = float(target) / 1.0 # 1.0 represents one second
-		#var incrementPerFrame = incrementPerSecond * delta
-		#
-		## Round the increment to the nearest integer
-		#var roundedIncrement = round(incrementPerFrame)
-		#
-		## Increment number
-		#number += int(roundedIncrement)
-		#
-		## Ensure number does not exceed the target value
-		#if number >= target:
-			#number = target
-			#print("Number reached target value: ", target)
-#
-#func _process(delta):
-	#fillinasecond(10000, delta)
-	#if number < 10000:
-		#print(number)
-	#
 
 func switch_scene_to_ending():
 	for window in window_list:
@@ -251,9 +250,35 @@ func switch_scene_to_ending():
 		get_viewport().set_embedding_subwindows(false)
 		mainwindow.set_flag(Window.FLAG_NO_FOCUS, false)
 		mainwindow.set_flag(Window.FLAG_BORDERLESS, false)
-		mainwindow.set_flag(Window.FLAG_TRANSPARENT, false)
+	mainwindow.set_flag(Window.FLAG_TRANSPARENT, false)
 		#mainwindow.set_mode(Window.MODE_MAXIMIZED)
 	get_tree().change_scene_to_packed(limboendingscene)
 
+func open_setting_window():
+	if window_list.size() == 8 and not disable_opening_settings:
+		setting_window_opened = true
+		LimboAudio.stop()
+		for window in window_list:
+			window.queue_free()
+		get_viewport().set_embedding_subwindows(false)
+		get_viewport().set_transparent_background(false)
+		mainwindow.set_flag(Window.FLAG_NO_FOCUS, false)
+		mainwindow.set_flag(Window.FLAG_BORDERLESS, false)
+		mainwindow.set_flag(Window.FLAG_TRANSPARENT, false)
+		mainwindow.set_mode(Window.MODE_WINDOWED)
+		VariableKeeper.main_saved_values = saved_values
+		
+		# make new config file if there isn't any available
+		var config = ConfigFile.new()
+		if config.load("user://limbosave.cfg") == ERR_FILE_NOT_FOUND:
+			for varname in saved_values:
+				VariableKeeper.config_set_value_from_variable_name(self, config, varname)
+			config.save("user://limbosave.cfg")
+		get_tree().change_scene_to_file("res://scenes/settings_menu.tscn")
+
 func _on_debug_timer_timeout():
 	if debugmessage: print(KeyManager.movelist_checksize())
+
+func _notification(what):
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		pass # supposedly prevent alt+f4 for quitting, but doesn't work?

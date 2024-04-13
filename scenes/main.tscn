@@ -11,8 +11,8 @@ wait_time = 0.5
 autostart = true
 
 [node name="LimboScenehelp" type="Sprite2D" parent="."]
-position = Vector2(367, 247)
 texture = ExtResource("2_rt7dn")
+centered = false
 metadata/_edit_lock_ = true
 
 [connection signal="timeout" from="DebugTimer" to="." method="_on_debug_timer_timeout"]

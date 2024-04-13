@@ -85,6 +85,9 @@ func _input(event): # debug
 		if clickable:
 			KeyManager.set_correctkey(correctkey)
 			mainscene.switch_scene_to_ending()
+	elif event is InputEventMouseButton:
+		if event.is_double_click() and event.button_index == MOUSE_BUTTON_RIGHT:
+			mainscene.open_setting_window()
 
 func _on_move_ends():
 	initialposition = Vector2(-1,-1)
@@ -165,3 +168,7 @@ func _on_arriving_in_orbit(angle):
 	await get_tree().create_timer(0.5).timeout
 	clickable = true
 	set_flag(FLAG_NO_FOCUS, false)
+
+func _notification(what):
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		pass # disable quitting via the close (X) button on each key window
