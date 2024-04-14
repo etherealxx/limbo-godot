@@ -8,3 +8,4 @@ shaders/test/
 discord_game_sdk_binding.dll
 discord_game_sdk.dll
 exports/
+test/

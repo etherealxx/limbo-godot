@@ -15,4 +15,15 @@ texture = ExtResource("2_rt7dn")
 centered = false
 metadata/_edit_lock_ = true
 
+[node name="WinLoseDialog" type="AcceptDialog" parent="."]
+disable_3d = true
+title = "Limbo-godot"
+initial_position = 1
+size = Vector2i(232, 100)
+unresizable = true
+always_on_top = true
+dialog_text = "You picked the WRONG key!"
+
 [connection signal="timeout" from="DebugTimer" to="." method="_on_debug_timer_timeout"]
+[connection signal="canceled" from="WinLoseDialog" to="." method="_on_win_lose_dialog_canceled"]
+[connection signal="confirmed" from="WinLoseDialog" to="." method="_on_win_lose_dialog_confirmed"]

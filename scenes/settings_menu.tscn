@@ -39,7 +39,7 @@ horizontal_alignment = 1
 [node name="NoticeLabel" type="Label" parent="SettingsList"]
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
-text = "Note: In order to load the configured configs the next time you load the game, load_save needs to be ON and rewrite_save needs to be OFF."
+text = "Note: In order to load the configured configs the next time you load the game, load_save needs to be ON."
 label_settings = SubResource("LabelSettings_4tptj")
 horizontal_alignment = 1
 autowrap_mode = 3
