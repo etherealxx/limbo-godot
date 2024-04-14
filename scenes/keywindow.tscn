@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://scripts/keywindow.gd" id="1_lq4d8"]
 
 [node name="Window" type="Window"]
+disable_3d = true
 position = Vector2i(631, 220)
 size = Vector2i(150, 150)
 unresizable = true

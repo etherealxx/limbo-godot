@@ -18,17 +18,22 @@ extends Node
 @export var winning_wait_time := 3.0
 ## Instantly goes straight to the orbiting key without shuffling
 @export var bluescreen_wait_time := 7.0
-## Create/loads settings. Turning this off will load the game with default settings
+## Instead of going to the ending screen, just bring a popup to determine if you won the game or not
+@export var no_ending_screen := false
+## Loads settings. Turning this off on the exported build will load the game with default settings
+## This does nothing when you run the game from the editor, unless ypu turn on tast_save_feature_on_editor
 @export var load_save := true
-## Only saves the current setting instead of loading. Basically this setting will make the game NOT load the save, but just saves.
-## Needs load_save set to true to works. Turn this off on the editor inspector tab to check the saved setting (loads setting)
-@export var rewrite_save := true
+## This makes the game, when being run on the editor, to loads the save file instead of following the exported variables.
+## Turn this on if you want to test the save/load feature, and turn it off if you want to test features from the exported variables.
+@export var tast_save_feature_on_editor := false
+
+@onready var dialog = $WinLoseDialog
 
 var saved_values = [
 	"sixteen_by_nine_reso", "fullscreen_ending", "debugdontmove",
 	"debug_key_mover_window", "instant_finish", "transparent_background",
-	"winning_wait_time", "bluescreen_wait_time", "load_save",
-	"rewrite_save"
+	"winning_wait_time", "bluescreen_wait_time", "no_ending_screen",
+	"load_save"
 ]
 
 const windowsize := 150
@@ -41,7 +46,7 @@ var window_pos_list : Array[Vector2i]
 var setting_window_opened := false
 var disable_opening_settings := false
 
-var limboendingscene = load("res://scenes/limbobackground.tscn")
+var limboendingscene
 
 var step_map_x = [ # from markhermy3100's Shuffler.ts -> https://github.com/MarkHermy3100/LimboKeys/blob/main/assets/scripts/Shuffler.ts
 	 [2, 4, 1, 3, 6, 8, 5, 7], # 0: on each 4 block (top and bottom) spin clockwise
@@ -115,19 +120,22 @@ func handle_load_and_save():
 		var config = ConfigFile.new()
 		
 		var err = config.load("user://limbosave.cfg")
-		if err == ERR_FILE_NOT_FOUND or rewrite_save:
-			# make new/update config file
+		if err == ERR_FILE_NOT_FOUND:
+			# make new config file
 			for varname in saved_values:
 				config_set_value_from_variable_name(config, varname)
 			config.save("user://limbosave.cfg")
-			if rewrite_save: print("Config file updated.")
-			else: print("New config file is made.")
+			print("New config file is made.")
 		elif err == OK:
-			# load config file
-			for varname in saved_values:
-				self.set(varname, config.get_value("settings", varname))
-			print("Config file loaded.")
-			
+			# standalone: exported build. always load save except load_save is off
+			# OR : testing the save feature via the editor
+			if OS.has_feature("standalone") or tast_save_feature_on_editor:
+				if config.get_value("settings", "load_save"):
+					# load config file
+					for varname in saved_values:
+						self.set(varname, config.get_value("settings", varname))
+					print("Config file loaded.")
+
 func _ready():
 	$LimboScenehelp.hide()
 	get_viewport().set_transparent_background(true)
@@ -138,10 +146,12 @@ func _ready():
 	mainwindow.set_flag(Window.FLAG_TRANSPARENT, true)
 	KeyManager.get_main()
 	LimboAudio.play_music()
+
+	handle_load_and_save()
 	
-	if load_save or rewrite_save:
-		handle_load_and_save()
-		
+	if not no_ending_screen:
+		limboendingscene = load("res://scenes/limbobackground.tscn")
+	
 	initialize_global_variables(
 		["sixteen_by_nine_reso", "fullscreen_ending", "winning_wait_time",
 		"bluescreen_wait_time", "transparent_background"]
@@ -246,14 +256,23 @@ func _ready():
 func switch_scene_to_ending():
 	for window in window_list:
 		window.queue_free()
-	if not fullscreen_ending:
+	if (not fullscreen_ending) or no_ending_screen:
 		get_viewport().set_embedding_subwindows(false)
 		mainwindow.set_flag(Window.FLAG_NO_FOCUS, false)
 		mainwindow.set_flag(Window.FLAG_BORDERLESS, false)
 	mainwindow.set_flag(Window.FLAG_TRANSPARENT, false)
 		#mainwindow.set_mode(Window.MODE_MAXIMIZED)
-	get_tree().change_scene_to_packed(limboendingscene)
-
+	if not no_ending_screen:
+		get_tree().change_scene_to_packed(limboendingscene)
+	else:
+		if KeyManager.correctkeychosen:
+			dialog.set_text("You picked the CORRECT key!")
+			LimboAudio.play_sfx(true) # winsfx
+		else:
+			dialog.set_text("You picked the WRONG key!")
+			LimboAudio.play_sfx()
+		dialog.show()
+	
 func open_setting_window():
 	if window_list.size() == 8 and not disable_opening_settings:
 		setting_window_opened = true
@@ -272,7 +291,7 @@ func open_setting_window():
 		var config = ConfigFile.new()
 		if config.load("user://limbosave.cfg") == ERR_FILE_NOT_FOUND:
 			for varname in saved_values:
-				VariableKeeper.config_set_value_from_variable_name(self, config, varname)
+				config_set_value_from_variable_name(config, varname)
 			config.save("user://limbosave.cfg")
 		get_tree().change_scene_to_file("res://scenes/settings_menu.tscn")
 
@@ -282,3 +301,9 @@ func _on_debug_timer_timeout():
 func _notification(what):
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
 		pass # supposedly prevent alt+f4 for quitting, but doesn't work?
+
+func _on_win_lose_dialog_confirmed():
+	get_tree().quit()
+
+func _on_win_lose_dialog_canceled():
+	get_tree().quit()
