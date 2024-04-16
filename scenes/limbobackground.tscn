@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scripts/limbobackground.gd" id="1_bwegk"]
 [ext_resource type="Texture2D" uid="uid://g5finm4rrbaw" path="res://assets/textures/gd_default_background.png" id="1_muvcx"]
 [ext_resource type="Texture2D" uid="uid://ce1ratapoehtd" path="res://assets/textures/this_pc_icon_blur.png" id="3_yhpv4"]
-[ext_resource type="FontFile" uid="uid://8gxideu8ajla" path="res://fonts/segoeui.ttf" id="4_1q0xr"]
+[ext_resource type="FontFile" uid="uid://cav7vtx0re00h" path="res://fonts/selawk.ttf" id="4_1g308"]
 [ext_resource type="Texture2D" uid="uid://sb3pwplia0ky" path="res://assets/textures/spike.svg" id="5_jrnkh"]
 
 [sub_resource type="Gradient" id="Gradient_nl0v1"]
@@ -15,8 +15,8 @@ gradient = SubResource("Gradient_nl0v1")
 width = 4096
 height = 2048
 
-[sub_resource type="LabelSettings" id="LabelSettings_5yq4b"]
-font = ExtResource("4_1q0xr")
+[sub_resource type="LabelSettings" id="LabelSettings_pim0r"]
+font = ExtResource("4_1g308")
 font_size = 20
 outline_size = 4
 outline_color = Color(0, 0, 0, 1)
@@ -89,11 +89,11 @@ expand_mode = 1
 layout_direction = 1
 layout_mode = 0
 offset_left = 18.0
-offset_top = 95.0
+offset_top = 97.0
 offset_right = 98.0
-offset_bottom = 129.0
+offset_bottom = 131.0
 text = "This PC"
-label_settings = SubResource("LabelSettings_5yq4b")
+label_settings = SubResource("LabelSettings_pim0r")
 horizontal_alignment = 1
 
 [node name="PCBody" type="CharacterBody2D" parent="SixteenbyNine/ThisPcIconCont"]

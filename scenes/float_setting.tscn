@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://0sm7268q8a3o"]
 
-[ext_resource type="FontFile" uid="uid://8gxideu8ajla" path="res://fonts/segoeui.ttf" id="1_jcf5r"]
+[ext_resource type="FontFile" uid="uid://cav7vtx0re00h" path="res://fonts/selawk.ttf" id="1_jcf5r"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_msxbt"]
 font = ExtResource("1_jcf5r")

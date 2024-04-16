@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://8gxideu8ajla"
-path="res://.godot/imported/segoeui.ttf-11db14e8ac52e5401073185c432b13b0.fontdata"
+uid="uid://cav7vtx0re00h"
+path="res://.godot/imported/selawk.ttf-1746c907762226dd3f459b3053908ba3.fontdata"
 
 [deps]
 
-source_file="res://fonts/segoeui.ttf"
-dest_files=["res://.godot/imported/segoeui.ttf-11db14e8ac52e5401073185c432b13b0.fontdata"]
+source_file="res://fonts/selawk.ttf"
+dest_files=["res://.godot/imported/selawk.ttf-1746c907762226dd3f459b3053908ba3.fontdata"]
 
 [params]
 
