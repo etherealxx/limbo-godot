@@ -18,6 +18,8 @@ extends Node
 @export var winning_wait_time := 3.0
 ## Instantly goes straight to the orbiting key without shuffling
 @export var bluescreen_wait_time := 7.0
+## Control the volume of the music and sfx. 20 is 0 dB. Decreasing this value will decrease the volume by 1 dB.
+@export var music_volume := 20.0
 ## Instead of going to the ending screen, just bring a popup to determine if you won the game or not
 @export var no_ending_screen := false
 ## Loads settings. Turning this off on the exported build will load the game with default settings
@@ -25,7 +27,7 @@ extends Node
 @export var load_save := true
 ## This makes the game, when being run on the editor, to loads the save file instead of following the exported variables.
 ## Turn this on if you want to test the save/load feature, and turn it off if you want to test features from the exported variables.
-@export var tast_save_feature_on_editor := false
+@export var test_save_feature_on_editor := false
 
 @onready var dialog = $WinLoseDialog
 
@@ -33,7 +35,7 @@ var saved_values = [
 	"sixteen_by_nine_reso", "fullscreen_ending", "debugdontmove",
 	"debug_key_mover_window", "instant_finish", "transparent_background",
 	"winning_wait_time", "bluescreen_wait_time", "no_ending_screen",
-	"load_save"
+	"music_volume", "load_save"
 ]
 
 const windowsize := 150
@@ -47,6 +49,7 @@ var setting_window_opened := false
 var disable_opening_settings := false
 
 var limboendingscene
+var nextscene : String
 
 var step_map_x = [ # from markhermy3100's Shuffler.ts -> https://github.com/MarkHermy3100/LimboKeys/blob/main/assets/scripts/Shuffler.ts
 	 [2, 4, 1, 3, 6, 8, 5, 7], # 0: on each 4 block (top and bottom) spin clockwise
@@ -117,24 +120,29 @@ func config_set_value_from_variable_name(configfile, varname):
 	configfile.set_value("settings", varname, self.get(varname))
 
 func handle_load_and_save():
-		var config = ConfigFile.new()
-		
-		var err = config.load("user://limbosave.cfg")
-		if err == ERR_FILE_NOT_FOUND:
-			# make new config file
-			for varname in saved_values:
+	var config = ConfigFile.new()
+	
+	var err = config.load("user://limbosave.cfg")
+	if err == ERR_FILE_NOT_FOUND:
+		# make new config file
+		for varname in saved_values:
+			config_set_value_from_variable_name(config, varname)
+		config.save("user://limbosave.cfg")
+		print("New config file is made.")
+	elif err == OK:
+		# still check if there any new values that hasn't been written yet
+		for varname in saved_values:
+			if not config.has_section_key("settings", varname):
 				config_set_value_from_variable_name(config, varname)
-			config.save("user://limbosave.cfg")
-			print("New config file is made.")
-		elif err == OK:
-			# standalone: exported build. always load save except load_save is off
-			# OR : testing the save feature via the editor
-			if OS.has_feature("standalone") or tast_save_feature_on_editor:
-				if config.get_value("settings", "load_save"):
-					# load config file
-					for varname in saved_values:
-						self.set(varname, config.get_value("settings", varname))
-					print("Config file loaded.")
+		config.save("user://limbosave.cfg")
+		# template: exported build. always load save except load_save is off. used to be "standalone"
+		# OR : testing the save feature via the editor
+		if OS.has_feature("template") or test_save_feature_on_editor:
+			if config.get_value("settings", "load_save"):
+				# load config file
+				for varname in saved_values:
+					self.set(varname, config.get_value("settings", varname))
+				print("Config file loaded.")
 
 func _ready():
 	$LimboScenehelp.hide()
@@ -145,10 +153,11 @@ func _ready():
 	mainwindow.set_flag(Window.FLAG_BORDERLESS, true)
 	mainwindow.set_flag(Window.FLAG_TRANSPARENT, true)
 	KeyManager.get_main()
-	LimboAudio.play_music()
-
+	
 	handle_load_and_save()
 	
+	LimboAudio.set_volume(music_volume)
+	LimboAudio.play_music()
 	if not no_ending_screen:
 		limboendingscene = load("res://scenes/limbobackground.tscn")
 	
@@ -265,6 +274,7 @@ func switch_scene_to_ending():
 	if not no_ending_screen:
 		get_tree().change_scene_to_packed(limboendingscene)
 	else:
+		mainwindow.set_mode(Window.MODE_MINIMIZED)
 		if KeyManager.correctkeychosen:
 			dialog.set_text("You picked the CORRECT key!")
 			LimboAudio.play_sfx(true) # winsfx
@@ -293,8 +303,16 @@ func open_setting_window():
 			for varname in saved_values:
 				config_set_value_from_variable_name(config, varname)
 			config.save("user://limbosave.cfg")
-		get_tree().change_scene_to_file("res://scenes/settings_menu.tscn")
-
+		if debugmessage: print("insidetree: " + str(is_inside_tree()))
+		var current_scenetree = get_tree()
+		if current_scenetree != null:
+			if debugmessage:
+				print("current scene: " + str(current_scenetree.get_current_scene().get_name()))
+				print("moving scene to settingsmenu now")
+			current_scenetree.change_scene_to_file("res://scenes/settings_menu.tscn")
+		else:
+			push_error("current scenetree is null")
+			
 func _on_debug_timer_timeout():
 	if debugmessage: print(KeyManager.movelist_checksize())
 
@@ -307,3 +325,12 @@ func _on_win_lose_dialog_confirmed():
 
 func _on_win_lose_dialog_canceled():
 	get_tree().quit()
+
+func start_change_scene(nextscenestring):
+	nextscene = nextscenestring
+	$ChangeSceneTimer.start()
+
+func _on_change_scene_timer_timeout():
+	match nextscene:
+		"setting": open_setting_window()
+		"ending": switch_scene_to_ending()

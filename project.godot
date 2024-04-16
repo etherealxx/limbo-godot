@@ -11,7 +11,8 @@ config_version=5
 [application]
 
 config/name="Keygen"
-config/version="1.0.0"
+config/description="focus"
+config/version="1.1.0"
 run/main_scene="res://scenes/main.tscn"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="limbo-godot"
@@ -24,10 +25,12 @@ config/icon="res://key.png"
 [autoload]
 
 KeyManager="*res://scripts/autoloads/keymanager.gd"
-; DiscordSDKLoader="*res://addons/discord-sdk-gd/nodes/discord_autoload.gd"
-; MyDiscordRPC="*res://scripts/autoloads/discordrpc.gd"
 LimboAudio="*res://scenes/audioplayer.tscn"
 VariableKeeper="*res://scripts/autoloads/variablekeeper.gd"
+
+[debug]
+
+file_logging/log_path="user://logs/limbo.log"
 
 [display]
 
@@ -36,10 +39,6 @@ window/size/viewport_height=150
 window/size/mode=1
 window/subwindows/embed_subwindows=false
 window/per_pixel_transparency/allowed=true
-
-[editor_plugins]
-
-; enabled=PackedStringArray("res://addons/discord-sdk-gd/plugin.cfg", "res://addons/script-ide/plugin.cfg")
 
 [filesystem]
 
