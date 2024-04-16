@@ -2,10 +2,10 @@
 .godot/
 addons/discord-sdk-gd/
 scripts/autoloads/discordrpc.gd
-test/bsod_by ether.png
 addons/script-ide/
 shaders/test/
 discord_game_sdk_binding.dll
 discord_game_sdk.dll
 exports/
 test/
+scripts/unused

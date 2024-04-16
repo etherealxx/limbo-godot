@@ -82,12 +82,14 @@ func _input(event): # debug
 	#elif event.is_action_pressed("debugrotate"): # R key
 		#key.tween_rotate()
 	if event.is_action_pressed("left_click"):
-		if clickable:
-			KeyManager.set_correctkey(correctkey)
-			mainscene.switch_scene_to_ending()
+			if clickable:
+				KeyManager.set_correctkey(correctkey)
+				#mainscene.switch_scene_to_ending()
+				mainscene.start_change_scene("ending")
 	elif event is InputEventMouseButton:
 		if event.is_double_click() and event.button_index == MOUSE_BUTTON_RIGHT:
-			mainscene.open_setting_window()
+			#mainscene.open_setting_window()
+			mainscene.start_change_scene("setting")
 
 func _on_move_ends():
 	initialposition = Vector2(-1,-1)

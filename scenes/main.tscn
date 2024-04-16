@@ -24,6 +24,11 @@ unresizable = true
 always_on_top = true
 dialog_text = "You picked the WRONG key!"
 
+[node name="ChangeSceneTimer" type="Timer" parent="."]
+wait_time = 0.05
+one_shot = true
+
 [connection signal="timeout" from="DebugTimer" to="." method="_on_debug_timer_timeout"]
 [connection signal="canceled" from="WinLoseDialog" to="." method="_on_win_lose_dialog_canceled"]
 [connection signal="confirmed" from="WinLoseDialog" to="." method="_on_win_lose_dialog_confirmed"]
+[connection signal="timeout" from="ChangeSceneTimer" to="." method="_on_change_scene_timer_timeout"]
