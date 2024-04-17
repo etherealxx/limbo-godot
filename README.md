@@ -1,4 +1,13 @@
-### A window-based, LIMBO-inspired, key-shuffle minigame made with Godot Engine, for Windows Desktop
+<table>
+  <tr>
+    <td style="width:50%">
+      <img src="https://github.com/etherealxx/limbo-godot/assets/64251396/53d462d2-a8f7-4f9f-b999-ec3e034038d3" alt="LIMBO-Inspired Minigame" style="max-width:100%;">
+    </td>
+    <td style="width:50%">
+      <h3>A window-based, LIMBO-inspired, key-shuffle minigame made with Godot Engine, for Windows Desktop</h3>
+    </td>
+  </tr>
+</table>
 
 ---
 
