@@ -34,6 +34,8 @@ func _ready():
 	currentwindow.set_flag(Window.FLAG_NO_FOCUS, false)
 	currentwindow.set_flag(Window.FLAG_TRANSPARENT, false) # idk if this do anything
 	get_viewport().set_transparent_background(false) # fixing windows 10 bug
+	if VariableKeeper.hide_border_on_maximize and !VariableKeeper.fullscreen_ending:
+		currentwindow.set_flag(Window.FLAG_BORDERLESS, true)
 	currentwindow.set_mode(modenumber())
 	currentwindow.move_to_foreground()
 	currentwindow.grab_focus()
