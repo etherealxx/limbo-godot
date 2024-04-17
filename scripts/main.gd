@@ -6,6 +6,9 @@ extends Node
 @export var sixteen_by_nine_reso := false
 ## If this was false, the end scene will be a maximized window instead of full screen.
 @export var fullscreen_ending := true
+## If fullscreen_ending is off, this hides the border on the maximized window, so it will look similiar to an actual fullscreen
+## Turning this off will show border, like how usually softwares looks when maximized with the maximize button.
+@export var hide_border_on_maximize := true
 ## Don't move the key automatically
 @export var debugdontmove := false
 ## Make a window appear that could control the movement of the key. Combine it with debugdon'tmove
@@ -35,7 +38,7 @@ var saved_values = [
 	"sixteen_by_nine_reso", "fullscreen_ending", "debugdontmove",
 	"debug_key_mover_window", "instant_finish", "transparent_background",
 	"winning_wait_time", "bluescreen_wait_time", "no_ending_screen",
-	"music_volume", "load_save"
+	"music_volume", "hide_border_on_maximize", "load_save"
 ]
 
 const windowsize := 150
@@ -163,7 +166,7 @@ func _ready():
 	
 	initialize_global_variables(
 		["sixteen_by_nine_reso", "fullscreen_ending", "winning_wait_time",
-		"bluescreen_wait_time", "transparent_background"]
+		"bluescreen_wait_time", "transparent_background", "hide_border_on_maximize"]
 	)
 	
 	if debug_key_mover_window:

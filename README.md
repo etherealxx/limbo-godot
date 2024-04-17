@@ -17,6 +17,7 @@
   - `transparent_background`, when turned off, the keys' window will no longer be transparent. Improves performance on lower end devices
   - `music_volume`, adjust the volume. Default is 20. Decreasing it will decrease the volume by 1 dB each.
   - `no_ending_screen`, when turned on, the bluescreen sequence won't happen, instead after clicking on the key, it'll just say if the key you choose is correct or wrong. For quick play.
+  - `fullscreen_ending`, when turned off, the ending sequence will play on maximized borderless window. This can fix some recording software can't properly record the ending sequence transition.
   - The rest are useful for debugging, and information about each variable can be read on the main root node's [script](https://github.com/etherealxx/limbo-godot/blob/master/scripts/main.gd).
 - Pressing `Esc` during the bluescreen ending will make you instantly quit the game, instead of needing to wait for 7 seconds
 
@@ -34,6 +35,8 @@
 - You can run the executable again to launch another game while the game is still running.
 - The game will look a bit weird on device with monitor resolution/display height smaller than +-900px
 - The song will desync when running the game on low-end device
+- The transition between choosing the key and the ending scene may freeze screen recorder (the recording will still going but the recorded video will looks weird). <br/>This can be mitigated by setting `fullscreen_ending` to `off` and `hide_title_on_maximize` to `on`. 
+- The blue pattern background on the ending scene may look cutted on certain device with higher resolution
 
 ---
 

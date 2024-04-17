@@ -9,6 +9,7 @@ var fullscreen_ending := true
 var winning_wait_time := 3.0
 var bluescreen_wait_time := 7.0
 var transparent_background := true
+var hide_border_on_maximize := true
 
 var main_saved_values
 
