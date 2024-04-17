@@ -1,13 +1,15 @@
 <table>
   <tr>
     <td style="width:50%">
-      <img src="https://github.com/etherealxx/limbo-godot/assets/64251396/53d462d2-a8f7-4f9f-b999-ec3e034038d3" alt="LIMBO-Inspired Minigame" style="max-width:100%;">
+      <img src="https://github.com/etherealxx/limbo-godot/assets/64251396/3524c12c-64b5-48c3-88bd-f1c340db9c1b" alt="focus" style="max-width:100%;">
     </td>
     <td style="width:50%">
       <h3>A window-based, LIMBO-inspired, key-shuffle minigame made with Godot Engine, for Windows Desktop</h3>
     </td>
   </tr>
 </table>
+
+<!-- ![altgithub-ezgif com-resizex](https://github.com/etherealxx/limbo-godot/assets/64251396/3524c12c-64b5-48c3-88bd-f1c340db9c1b) -->
 
 ---
 
