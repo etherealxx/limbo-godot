@@ -56,6 +56,7 @@ func _ready():
 
 func set_tween_pcicon():
 	var tween = create_tween()
+	VariableKeeper.tweenprocesschanger(tween)
 	tween.tween_property(pcicon,
 	"position:x",
 	-200,
@@ -72,6 +73,7 @@ func detach_label():
 	self.add_child(thispclabel)
 	thispclabel.position = labelpos
 	var tween = create_tween()
+	VariableKeeper.tweenprocesschanger(tween)
 	tween.tween_property(thispclabel,
 	"position:y",
 	-1500,
@@ -79,6 +81,7 @@ func detach_label():
 
 func set_tween_topbg():
 	var tween = create_tween()
+	VariableKeeper.tweenprocesschanger(tween)
 	tween.tween_property(topbg,
 	"position:x",
 	-300,
@@ -91,6 +94,7 @@ func set_tween_topbg():
 
 func set_tween_bottombg():
 	var tween = create_tween()
+	VariableKeeper.tweenprocesschanger(tween)
 	tween.tween_property(bottombg,
 	"position:y",
 	-1500,
@@ -123,6 +127,7 @@ func _on_spike_hitbox_body_entered(body):
 		if not correctkey:
 			movetonextscene = true
 		else:
+			VariableKeeper.timerprocesschanger(timer)
 			timer.start(VariableKeeper.winning_wait_time)
 
 func _on_quit_timer_timeout():

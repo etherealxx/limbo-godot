@@ -7,6 +7,9 @@ var mainscene : Node
 var ispolling := false
 var orbitcenterpos : Vector2i
 var correctkeychosen : bool
+var checkreducemoves_initiated := false
+var reducedwindows_finished := 0
+var pollingtimer : Timer
 
 func _ready():
 	for x in range(8):
@@ -14,6 +17,8 @@ func _ready():
 
 func set_correctkey(keybool):
 	correctkeychosen = keybool
+	if pollingtimer:
+		pollingtimer.queue_free()
 
 func get_main():
 	mainscene = get_tree().get_root().get_node("Main")
@@ -22,11 +27,12 @@ func get_main():
 func startpolling():
 	if not ispolling:
 		ispolling = true
-		var newtimer = Timer.new()
-		newtimer.set_wait_time(polling_rate)
-		add_child(newtimer)
-		newtimer.timeout.connect(_on_polling)
-		newtimer.start()
+		pollingtimer = Timer.new()
+		pollingtimer.set_wait_time(polling_rate)
+		add_child(pollingtimer)
+		pollingtimer.timeout.connect(_on_polling)
+		VariableKeeper.timerprocesschanger(pollingtimer)
+		pollingtimer.start()
 	
 func donemoving_onewindow():
 	readytomove_list.append((true))
@@ -35,7 +41,8 @@ func movelist_checksize():
 	return readytomove_list.size()
 
 func is_allwindow_moved():
-	if movelist_checksize() in [8, 16]: return true # 8 windows
+	if movelist_checksize() % 8 == 0 and movelist_checksize() > 0: # multiple of 8
+		return true # 8 windows
 	else: return false
 
 func allwindow_moving():
@@ -56,3 +63,21 @@ func get_orbitcenterpos():
 	
 func set_orbitcenterpos(value : Vector2i):
 	orbitcenterpos = value
+
+#func _exit_tree():
+	#if pollingtimer:
+		#pollingtimer.queue_free()
+		
+func _physics_process(_delta):
+	if LimboAudio.is_playing_limbo_music() and not checkreducemoves_initiated:
+		if LimboAudio.get_playback_position() >= 14.3:
+			checkreducemoves_initiated = true
+			print("reducemove request sent")
+			for window in mainscene.window_list:
+				window.checkreducemove()
+
+func prepare_finished():
+	reducedwindows_finished += 1
+	if reducedwindows_finished >= 8:
+		for window in mainscene.window_list:
+			window.finishing_move()

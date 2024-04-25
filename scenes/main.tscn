@@ -21,7 +21,6 @@ title = "Limbo-godot"
 initial_position = 1
 size = Vector2i(232, 100)
 unresizable = true
-always_on_top = true
 dialog_text = "You picked the WRONG key!"
 
 [node name="ChangeSceneTimer" type="Timer" parent="."]

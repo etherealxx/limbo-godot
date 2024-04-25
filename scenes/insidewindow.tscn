@@ -22,7 +22,13 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_03hv5")
 
-[node name="Key" type="TextureRect" parent="."]
+[node name="Key" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_7sq2e")
+position = Vector2(75, 75)
+texture = ExtResource("1_7hv0t")
+
+[node name="Key_old" type="TextureRect" parent="."]
+visible = false
 material = SubResource("ShaderMaterial_7sq2e")
 layout_mode = 1
 anchors_preset = 15
@@ -32,6 +38,7 @@ grow_horizontal = 2
 grow_vertical = 2
 pivot_offset = Vector2(75, 75)
 texture = ExtResource("1_7hv0t")
+expand_mode = 1
 
 [node name="DelayTimer" type="Timer" parent="."]
 one_shot = true

@@ -19,7 +19,7 @@
 
 #### For Godot User
 - Clone this repo locally
-- Open the project with `Godot 4.2.1`, and then open main scene (`"res://scenes/main.tscn"`)
+- Open the project with `Godot 4.2.2`, and then open main scene (`"res://scenes/main.tscn"`)
 - Follow the instruction provided there
 
 #### Tips for player
@@ -44,7 +44,6 @@
 - The game won't work on device with vertical (portrait) primary monitor.
 - There's a weird bug in certain Windows 10 device, where the black part of the ending sequence is fully transparent, and the bluescreen is half transparent.
 - You can run the executable again to launch another game while the game is still running.
-- The game will look a bit weird on device with monitor resolution/display height smaller than +-900px
 - The song will desync when running the game on low-end device
 - The transition between choosing the key and the ending scene may freeze screen recorder (the recording will still going but the recorded video will looks weird). <br/>This can be mitigated by setting `fullscreen_ending` to `off` and `hide_title_on_maximize` to `on`. 
 - The blue pattern background on the ending scene may look cutted on certain device with higher resolution

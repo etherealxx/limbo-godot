@@ -13,17 +13,16 @@ var key_colors = [
 #func keyshader_set_targetcolor(keyshader : Shader, target: String):
 	#keyshader.set("shader_parameter/u_color_key", Color(target))
 #
-#func keyshader_set_replacementcolor(keyshader : Shader, target: String):
-	#keyshader.set("shader_parameter/u_replacement_color", Color(target))
-#
 #func keyshader_set_tolerance(keyshader : Shader, tolerance: float):
 	#keyshader.set("shader_parameter/u_tolerance", tolerance)
 
 func _ready():
+	key.position = self.size / 2.0
 	key.material = key.material.duplicate() # make unique
 	
 func tween_rotate(degree := 180.0, duration := 0.4):
 	var tween = create_tween()
+	VariableKeeper.tweenprocesschanger(tween)
 	tween.tween_property(key,
 	"rotation_degrees",
 	degree,
@@ -31,6 +30,7 @@ func tween_rotate(degree := 180.0, duration := 0.4):
 
 func queue_rotate(delay : float, degree : float, duration : float):
 	timer.timeout.connect(_on_timer_delay_finished.bind(degree, duration))
+	VariableKeeper.timerprocesschanger(timer)
 	timer.start(delay)
 
 func _on_timer_delay_finished(degree, duration):
@@ -40,6 +40,21 @@ func desaturize_color(colorcode : String):
 	var new_color = Color(colorcode)
 	new_color.s -= 0.3 # saturation
 	return new_color
+
+#func click_animation():
+	#$Key/AnimationPlayer.play("click")
+
+func click_animation():
+	var tween = create_tween()
+	VariableKeeper.tweenprocesschanger(tween)
+	tween.tween_property(key,
+	"scale",
+	Vector2(0.8, 0.8), # final value
+	0.15).set_trans(Tween.TRANS_QUINT) # duration
+	tween.tween_property(key,
+	"scale",
+	Vector2(1.0, 1.0), # final value
+	0.15).from_current().set_trans(Tween.TRANS_QUINT) # duration
 
 func flash_green():
 	var keyshader : ShaderMaterial = key.get_material()
@@ -51,6 +66,7 @@ func flash_green():
 	keyshader.set_shader_parameter("u_interpolation_factor", 0.0)
 	
 	var tween = create_tween()
+	VariableKeeper.tweenprocesschanger(tween)
 	tween.tween_property(keyshader,
 	"shader_parameter/u_interpolation_factor",
 	1.0, # final value
@@ -64,9 +80,10 @@ func flash_green():
 	0.0, # final value
 	0.7) # duration
 
-func _input(event): # debug
-	if event.is_action_pressed("debugshuffle"): # F key
-		flash_green()
+#func _input(event): # debug
+	#if event.is_action_pressed("debugshuffle"): # F key
+		##flash_green()
+		#click_animation()
 
 func shift_color(index):
 
@@ -81,6 +98,7 @@ func shift_color(index):
 	keyshader.set_shader_parameter("u_interpolation_factor", 0.0)
 	
 	var tween = create_tween()
+	VariableKeeper.tweenprocesschanger(tween)
 	tween.tween_property(keyshader,
 	"shader_parameter/u_interpolation_factor",
 	1.0, # final value

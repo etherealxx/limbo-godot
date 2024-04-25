@@ -3,6 +3,8 @@ extends Window
 @onready var inside = $CanvasLayer/insidedebugwindow
 @onready var mainscript = get_parent()
 
+var text
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	var xpos := 5.0
@@ -20,6 +22,15 @@ func _ready():
 		newbutton.pressed.connect(func(): debugclick(i))
 		xpos += 40
 		i += 1
-
+	
+	#text = Label.new()
+	#inside.add_child(text)
+	#text.global_position.y = ypos + 40
+	
 func debugclick(moveindex):
 	mainscript.startrandommove(moveindex)
+
+#func _physics_process(delta):
+	#if text and LimboAudio.is_playing():
+		#var text_to_display : String = str(roundf(LimboAudio.get_playback_position() * 100) / 100)
+		#text.set_text(text_to_display)

@@ -2,6 +2,10 @@ extends Node
 
 ## Prints some messages to console for debug purposes
 @export var debugmessage := false
+## Don't move the key automatically
+@export var debugdontmove := false
+## Make a window appear that could control the movement of the key. Combine it with debugdon'tmove
+@export var debug_key_mover_window := false
 ## The end scene will displays on 16:9 ratio instead of full screen. For widescreen/showcase
 @export var sixteen_by_nine_reso := false
 ## If this was false, the end scene will be a maximized window instead of full screen.
@@ -9,10 +13,6 @@ extends Node
 ## If fullscreen_ending is off, this hides the border on the maximized window, so it will look similiar to an actual fullscreen
 ## Turning this off will show border, like how usually softwares looks when maximized with the maximize button.
 @export var hide_border_on_maximize := true
-## Don't move the key automatically
-@export var debugdontmove := false
-## Make a window appear that could control the movement of the key. Combine it with debugdon'tmove
-@export var debug_key_mover_window := false
 ## Instantly goes straight to the orbiting key without shuffling
 @export var instant_finish := false
 ## Disabling this will make the key having a gray background behind it (no transparency)
@@ -25,6 +25,12 @@ extends Node
 @export var music_volume := 20.0
 ## Instead of going to the ending screen, just bring a popup to determine if you won the game or not
 @export var no_ending_screen := false
+## Set the Process Callback of every tween and timer to Physics. This is the new default.
+## Turning this off will use Idle process callback on those tweens/timers, which could cause issues on higher refresh rate monitors.
+## Keep in mind that some code will still runs on physics process (like _physics_process() function)
+@export var physics_process := true
+## This changes several settings, like keywindow size and bsod screen. Automatically triggers on device with resolution height smaller than 800.
+@export var small_height_resolution := false
 ## Loads settings. Turning this off on the exported build will load the game with default settings
 ## This does nothing when you run the game from the editor, unless ypu turn on tast_save_feature_on_editor
 @export var load_save := true
@@ -38,11 +44,12 @@ var saved_values = [
 	"sixteen_by_nine_reso", "fullscreen_ending", "debugdontmove",
 	"debug_key_mover_window", "instant_finish", "transparent_background",
 	"winning_wait_time", "bluescreen_wait_time", "no_ending_screen",
-	"music_volume", "hide_border_on_maximize", "load_save"
+	"music_volume", "hide_border_on_maximize", "physics_process",
+	"load_save"
 ]
 
-const windowsize := 150
-const margin := 50
+var windowsize := 150
+var margin := 50
 const window_shuffle_delay = 0.04
 
 var mainwindow : Window
@@ -53,6 +60,8 @@ var disable_opening_settings := false
 
 var limboendingscene
 var nextscene : String
+
+#var is_orbiting_list : Array[bool] = []
 
 var step_map_x = [ # from markhermy3100's Shuffler.ts -> https://github.com/MarkHermy3100/LimboKeys/blob/main/assets/scripts/Shuffler.ts
 	 [2, 4, 1, 3, 6, 8, 5, 7], # 0: on each 4 block (top and bottom) spin clockwise
@@ -166,8 +175,11 @@ func _ready():
 	
 	initialize_global_variables(
 		["sixteen_by_nine_reso", "fullscreen_ending", "winning_wait_time",
-		"bluescreen_wait_time", "transparent_background", "hide_border_on_maximize"]
+		"bluescreen_wait_time", "transparent_background", "hide_border_on_maximize",
+		"physics_process"]
 	)
+	
+	VariableKeeper.timerprocesschanger($DebugTimer)
 	
 	if debug_key_mover_window:
 		var keymover = load("res://scenes/debug/debugwindow.tscn").instantiate()
@@ -188,6 +200,7 @@ func _ready():
 		# this should be the code for vertical monitor
 		# however i'm too lazy to implement it :)
 		push_error("Portrait/vertical monitor/resolution detected. Code not implemented yet")
+		OS.alert("Portrait/vertical monitor/resolution detected. Code not implemented yet")
 		get_tree().quit()
 	
 	var orbitcenterpos = Vector2i(	key_area.position.x + (key_area.size.x / 2),
@@ -196,21 +209,39 @@ func _ready():
 	
 	print(key_area.position, key_area.size)
 	
+	if usable_screen_height < 800:
+		small_height_resolution = true
+	
+	initialize_global_variables(["small_height_resolution"])
+	
+	if small_height_resolution:
+		windowsize = 110
+	
 	var spawn_xpos = key_area.position.x + (key_area.size.x / 2) - windowsize - margin
 	var spawn_ypos = key_area.size.y / 8
+	
+	if small_height_resolution:
+		spawn_ypos = roundi((usable_screen_height - (windowsize * 4 + margin * 3)) / 2)
+	
 	var loopstep = 0
 	
 	for x in range(8):
 		var window_instance : Window = load("res://scenes/keywindow.tscn").instantiate()
-		
 		#if loopstep == 0:
 			#window_instance.debugmessage = true
+
 		add_child(window_instance)
+		
+		if small_height_resolution:
+			window_instance.update_key_size(Vector2(110, 110))
+			
 		window_instance.set_order(loopstep + 1)
 		
 		if loopstep > 0:
 			if loopstep % 2 == 0:
-				spawn_ypos += windowsize + int(margin * 1.5)
+				var ymargin = roundi(margin * 1.5)
+				if small_height_resolution: ymargin = roundi(margin * 1.1)
+				spawn_ypos += windowsize + ymargin
 				spawn_xpos = key_area.position.x + (key_area.size.x / 2) - windowsize - margin # reset
 			else:
 				spawn_xpos += windowsize + margin
@@ -220,16 +251,16 @@ func _ready():
 		window_list.append(window_instance)
 		loopstep += 1
 		window_pos_list.append(window_instance.position)
-		await get_tree().create_timer(0.2).timeout
+		await get_tree().create_timer(0.2, true, VariableKeeper.physics_process).timeout
 	
 	if not debugdontmove:
 		## 5 second delay, minus 0.2 * 8
-		await get_tree().create_timer(1.2).timeout
+		await get_tree().create_timer(1.2, true, VariableKeeper.physics_process).timeout
 		if setting_window_opened: return
 		var random_window = window_list.pick_random()
 		random_window.set_as_correct_key()
 		#await get_tree().create_timer(2.0).timeout # old delay
-		await get_tree().create_timer(1.8).timeout
+		await get_tree().create_timer(1.8, true, VariableKeeper.physics_process).timeout
 		if setting_window_opened: return
 		disable_opening_settings = true # prevent opening settings window when key is shuffling
 		
@@ -261,8 +292,8 @@ func _ready():
 				window.startmoving()
 		#shufflewindow(0)
 		else: # instant finish
+			LimboAudio.play(13.6)
 			for window in window_list:
-				LimboAudio.play(13.6)
 				window.finishing_move()
 
 func switch_scene_to_ending():
@@ -272,7 +303,7 @@ func switch_scene_to_ending():
 		get_viewport().set_embedding_subwindows(false)
 		mainwindow.set_flag(Window.FLAG_NO_FOCUS, false)
 		mainwindow.set_flag(Window.FLAG_BORDERLESS, false)
-	mainwindow.set_flag(Window.FLAG_TRANSPARENT, false)
+	if no_ending_screen: mainwindow.set_flag(Window.FLAG_TRANSPARENT, false)
 		#mainwindow.set_mode(Window.MODE_MAXIMIZED)
 	if not no_ending_screen:
 		get_tree().change_scene_to_packed(limboendingscene)
@@ -331,9 +362,19 @@ func _on_win_lose_dialog_canceled():
 
 func start_change_scene(nextscenestring):
 	nextscene = nextscenestring
+	VariableKeeper.timerprocesschanger($ChangeSceneTimer)
 	$ChangeSceneTimer.start()
 
 func _on_change_scene_timer_timeout():
 	match nextscene:
 		"setting": open_setting_window()
 		"ending": switch_scene_to_ending()
+		
+#func new_orbiting_key():
+	#is_orbiting_list.append(true)
+	#if is_orbiting_list.size() == 8:
+		#print("focusnow")
+		#await get_tree().create_timer(0.1, true, VariableKeeper.physics_process).timeout
+		#mainwindow.grab_focus()
+		#mainwindow.set_mode(Window.MODE_WINDOWED)
+		#mainwindow.grab_focus()

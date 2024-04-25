@@ -1,0 +1,9 @@
+[gd_resource type="LabelSettings" load_steps=2 format=3 uid="uid://b110sfyaw4ska"]
+
+[ext_resource type="FontFile" uid="uid://cwf8bhunthy7q" path="res://fonts/segoe_slboot.ttf" id="1_3et3b"]
+
+[resource]
+line_spacing = 3.09
+font = ExtResource("1_3et3b")
+font_size = 30
+shadow_size = 0
