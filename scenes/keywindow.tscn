@@ -20,4 +20,7 @@ script = ExtResource("1_lq4d8")
 [node name="MoveDelay" type="Timer" parent="."]
 one_shot = true
 
+[node name="DebugGetPosTimer" type="Timer" parent="."]
+
 [connection signal="timeout" from="MoveDelay" to="." method="_on_move_delay_timeout"]
+[connection signal="timeout" from="DebugGetPosTimer" to="." method="_on_debug_get_pos_timer_timeout"]

@@ -72,7 +72,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ReferenceRect" type="ReferenceRect" parent="SixteenbyNine/HBoxContainer"]
+[node name="LeftBorderRect" type="ReferenceRect" parent="SixteenbyNine/HBoxContainer"]
 custom_minimum_size = Vector2(186, 0)
 layout_mode = 2
 
@@ -80,7 +80,7 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ReferenceRect" type="ReferenceRect" parent="SixteenbyNine/HBoxContainer/VBoxContainer"]
+[node name="TopBorderRect" type="ReferenceRect" parent="SixteenbyNine/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 105)
 layout_mode = 2
 

@@ -39,7 +39,7 @@ func _run():
 	var configtext
 	if mode_disableplugin:
 		disabledconfig.save(disabledaddonsfile_path)
-		print("Active addons now deactivated. Please reload the project on Project > Reload Current Project")
+		push_warning("Active addons now deactivated. Please reload the project on Project > Reload Current Project")
 	else:
 		projectconfig.load(projectsettingfile_path)
 		disabledconfig.load(disabledaddonsfile_path)
@@ -48,7 +48,7 @@ func _run():
 				projectconfig.set_value(section, key, disabledconfig.get_value(section, key))
 				disabledconfig.set_value(section, key, null)
 		disabledconfig.save(disabledaddonsfile_path)
-		print("Inactive addons now reactivated. Please reload the project on Project > Reload Current Project")
+		push_warning("Inactive addons now reactivated. Please reload the project on Project > Reload Current Project")
 		
 	configtext = projectconfig.encode_to_text()
 	var projectsettingfile = FileAccess.open(projectsettingfile_path, FileAccess.WRITE)
